@@ -1,0 +1,334 @@
+{
+  "settings": {
+    "siteName": "Disha Overseas",
+    "tagline": "Visa consultancy, Gurugram",
+    "logo": "/logo.png",
+    "favicon": "/favicon.png",
+    "siteUrl": "",
+    "primaryColor": "#0a2a66",
+    "accentColor": "#d6202f",
+    "phone": "+91 00000 00000",
+    "whatsapp": "910000000000",
+    "email": "info@example.com",
+    "address": "Gurugram, Haryana, India",
+    "hours": "Mon to Sat, 10:00 AM to 7:00 PM",
+    "topBarText": "Free first consultation for every visa enquiry",
+    "nav": [
+      { "label": "Home", "path": "/" },
+      { "label": "About", "path": "/about" },
+      { "label": "Services", "path": "/services" },
+      { "label": "Russia Visa", "path": "/russia-visa" },
+      { "label": "Blog", "path": "/blog" },
+      { "label": "FAQ", "path": "/faq" },
+      { "label": "Contact", "path": "/contact" }
+    ],
+    "navCtaLabel": "Free consultation",
+    "navCtaLink": "/contact",
+    "social": {
+      "facebook": "",
+      "instagram": "",
+      "linkedin": "",
+      "youtube": "",
+      "twitter": ""
+    },
+    "footerAbout": "Disha Overseas is a visa consultancy based in Gurugram, India. We help travellers and business people with tourist and business visas, with a special focus on Russia.",
+    "copyright": "Disha Overseas. All rights reserved.",
+    "disclaimer": "Disha Overseas is a visa consultancy. We assist with applications and documentation. Visa decisions are made solely by the concerned embassy or government authority.",
+    "seo": {
+      "title": "Disha Overseas | Visa Consultancy in Gurugram | Russia Tourist & Business Visa",
+      "description": "Disha Overseas, Gurugram: reliable and transparent visa assistance for tourist and business visas, with special expertise in Russia visas.",
+      "image": ""
+    }
+  },
+
+  "home": {
+    "hero": {
+      "badge": "Visa consultancy in Gurugram",
+      "title": "Your visa, handled with care. Russia is our speciality.",
+      "subtitle": "From the first document check to the final submission, Disha Overseas guides you through every step of your tourist or business visa application, clearly and honestly.",
+      "primaryBtn": { "label": "Start your application", "link": "/contact" },
+      "secondaryBtn": { "label": "Explore Russia visas", "link": "/russia-visa" },
+      "image": "",
+      "points": [
+        "Tourist and business visas",
+        "Document checking before you apply",
+        "Clear pricing, no surprises"
+      ],
+      "routeFrom": "Gurugram",
+      "routeTo": "Russia",
+      "stampTitle": "Russia desk",
+      "stampText": "Tourist and business visa assistance"
+    },
+    "stats": [
+      { "value": "Russia", "label": "Our core specialisation" },
+      { "value": "2", "label": "Visa types: tourist and business" },
+      { "value": "1 to 1", "label": "Personal guidance on every file" },
+      { "value": "Clear", "label": "Transparent process and fees" }
+    ],
+    "servicesIntro": {
+      "title": "Visa services we offer",
+      "subtitle": "Pick the service that fits your trip. If you are not sure, talk to us and we will point you in the right direction."
+    },
+    "russiaBanner": {
+      "title": "Travelling to Russia? Start with people who know the process.",
+      "text": "Russia visa rules, forms and supporting documents can be confusing. Our Russia desk checks your papers, prepares your application and keeps you informed until it is submitted.",
+      "button": { "label": "See how Russia visas work", "link": "/russia-visa" },
+      "image": ""
+    },
+    "whyUs": {
+      "title": "Why people choose Disha Overseas",
+      "subtitle": "Our name means direction. That is what we give you: a clear path through a process that can feel complicated.",
+      "items": [
+        { "icon": "ShieldCheck", "title": "Reliable and honest", "text": "We tell you what is needed and what to expect. We never promise approvals, because only the authorities decide." },
+        { "icon": "FileCheck", "title": "Careful documentation", "text": "Every document is checked against the latest requirements before submission to avoid avoidable delays." },
+        { "icon": "Eye", "title": "Transparent process", "text": "You know the steps, the timeline and the fees from day one. No hidden charges." },
+        { "icon": "Headphones", "title": "Personal support", "text": "Call or message us on WhatsApp. A real person answers your questions about your application." },
+        { "icon": "Globe", "title": "Russia expertise", "text": "Focused experience with Russia tourist and business visa applications." },
+        { "icon": "Clock", "title": "Respect for your time", "text": "Clear checklists and quick responses so your application moves forward without back and forth." }
+      ]
+    },
+    "process": {
+      "title": "How it works",
+      "subtitle": "A simple four step process from first call to submission.",
+      "steps": [
+        { "title": "Talk to us", "text": "Share your travel plan and purpose. We tell you which visa fits and what you will need." },
+        { "title": "Send your documents", "text": "We give you a clear checklist. You share scans or photos and we review every page." },
+        { "title": "We prepare your application", "text": "We fill in forms, arrange the file and confirm everything with you before it goes in." },
+        { "title": "Submission and updates", "text": "We submit your application and keep you updated until you hear back from the authorities." }
+      ]
+    },
+    "testimonialsIntro": {
+      "title": "What our clients say",
+      "subtitle": "Words from travellers and business owners we have helped."
+    },
+    "faqIntro": {
+      "title": "Questions we hear often",
+      "subtitle": "Quick answers before you get in touch."
+    },
+    "cta": {
+      "title": "Ready to plan your trip?",
+      "text": "Tell us where you are going and when. We will reply with the documents you need and the next steps.",
+      "button": { "label": "Talk to an expert", "link": "/contact" }
+    }
+  },
+
+  "about": {
+    "hero": {
+      "title": "About Disha Overseas",
+      "subtitle": "A Gurugram based visa consultancy built on reliability, transparency and professional service."
+    },
+    "company": {
+      "title": "Who we are",
+      "text": "Disha Overseas is a visa consultancy based in Gurugram, India. We provide tourist visa and business visa services, with a special focus on Russia visas.\n\nWe assist customers with visa applications, documentation and the visa process from start to finish. Our aim is to provide reliable, transparent and professional visa assistance, so you can focus on your journey instead of the paperwork.",
+      "image": "",
+      "mission": "To make visa applications simple, clear and stress free for every traveller and business person we work with.",
+      "vision": "To be the most trusted visa consultancy in Delhi NCR, known for honesty and for our expertise in Russia visas.",
+      "values": [
+        { "icon": "ShieldCheck", "title": "Reliability", "text": "We do what we say, and we keep you informed at every step." },
+        { "icon": "Eye", "title": "Transparency", "text": "Clear process, clear timelines, clear fees." },
+        { "icon": "Award", "title": "Professionalism", "text": "Careful, accurate work on every single application." },
+        { "icon": "HeartHandshake", "title": "Care for clients", "text": "Your trip matters to you, so it matters to us." }
+      ]
+    },
+    "founder": {
+      "title": "Meet the founder",
+      "name": "Founder Name",
+      "role": "Founder, Disha Overseas",
+      "photo": "",
+      "bio": "Write the founder's story here from the admin panel: background, years of experience in the visa industry, and why Disha Overseas was started.\n\nA personal note builds trust. Tell visitors what drives you and what they can expect when they work with you.",
+      "quote": "Every traveller deserves a clear direction and an honest answer.",
+      "highlights": [
+        "Add a qualification or achievement",
+        "Add years of experience",
+        "Add a specialisation, for example Russia visas"
+      ]
+    }
+  },
+
+  "russia": {
+    "hero": {
+      "title": "Russia visa assistance",
+      "subtitle": "Tourist and business visa support for Russia, with careful document checking and clear guidance.",
+      "image": ""
+    },
+    "overview": {
+      "title": "Why a Russia specialist matters",
+      "text": "Russia has its own forms, supporting document rules and processing steps, and they can change. Small mistakes in an application can cause delay or refusal.\n\nOur Russia desk keeps up with the current requirements, checks your documents before you apply and prepares your application so that it is complete and accurate."
+    },
+    "visaTypes": [
+      {
+        "title": "Russia tourist visa",
+        "text": "For leisure travel, sightseeing and visiting friends or family.",
+        "points": [
+          "Application form preparation",
+          "Travel plan and booking guidance",
+          "Document review and checklist",
+          "Submission support and updates"
+        ]
+      },
+      {
+        "title": "Russia business visa",
+        "text": "For meetings, trade, conferences and other business activities.",
+        "points": [
+          "Guidance on invitation requirements",
+          "Company and personal document review",
+          "Application form preparation",
+          "Submission support and updates"
+        ]
+      }
+    ],
+    "documents": {
+      "title": "Typical documents you may need",
+      "note": "Exact requirements depend on your visa type and can change. We confirm the current list for you when you contact us.",
+      "items": [
+        "Passport with sufficient validity and blank pages",
+        "Recent passport size photographs",
+        "Completed visa application form",
+        "Travel itinerary and accommodation details",
+        "Proof of funds or bank statements",
+        "Invitation or supporting letter, where required",
+        "Business documents for business visa applicants"
+      ]
+    },
+    "steps": {
+      "title": "Your Russia visa journey",
+      "items": [
+        { "title": "Free consultation", "text": "We understand your trip and recommend the correct visa type." },
+        { "title": "Document checklist", "text": "You receive a personalised checklist for your case." },
+        { "title": "Review and preparation", "text": "We check every document and prepare the application." },
+        { "title": "Submission", "text": "We submit your application with you fully informed." },
+        { "title": "Follow up", "text": "We guide you on the next steps until the decision." }
+      ]
+    },
+    "notes": {
+      "title": "Good to know",
+      "text": "Visa approval, processing time and fees charged by the embassy or consulate are decided by the authorities and can change without notice. Disha Overseas provides assistance and guidance and does not guarantee approval.\n\nApply early. We recommend starting at least a few weeks before your planned travel."
+    },
+    "faqs": [
+      { "q": "Can you help with both tourist and business visas for Russia?", "a": "Yes. Russia is our main focus and we handle both tourist and business visa applications." },
+      { "q": "How early should I apply?", "a": "As early as you can. Starting a few weeks before your travel date gives enough time to prepare documents and handle any queries." },
+      { "q": "Do you guarantee approval?", "a": "No consultancy can. Final decisions rest with the authorities. We make sure your application is complete, accurate and well prepared." }
+    ]
+  },
+
+  "services": [
+    {
+      "slug": "russia-tourist-visa",
+      "title": "Russia Tourist Visa",
+      "icon": "Plane",
+      "short": "Complete assistance for your Russia holiday visa, from checklist to submission.",
+      "description": "Planning to explore Moscow, Saint Petersburg or beyond? We guide you through the entire Russia tourist visa process.\n\n## How we help\n\n- Confirm the right visa category for your trip\n- Prepare a personalised document checklist\n- Review all documents before submission\n- Fill in and verify the application form\n- Keep you updated until the decision",
+      "image": "",
+      "features": ["Personalised checklist", "Form preparation", "Document review", "Status updates"],
+      "documents": ["Passport", "Photographs", "Application form", "Travel and stay details", "Proof of funds"]
+    },
+    {
+      "slug": "russia-business-visa",
+      "title": "Russia Business Visa",
+      "icon": "Briefcase",
+      "short": "Support for entrepreneurs and professionals travelling to Russia for business.",
+      "description": "Business travel to Russia needs the right paperwork. We help you understand the requirements and prepare a strong, accurate application.\n\n## How we help\n\n- Explain invitation and supporting document needs\n- Review company and personal documents\n- Prepare and verify the application\n- Guide you through submission",
+      "image": "",
+      "features": ["Invitation guidance", "Company document review", "Application preparation", "Submission support"],
+      "documents": ["Passport", "Photographs", "Application form", "Invitation or supporting letter", "Company documents"]
+    },
+    {
+      "slug": "tourist-visa",
+      "title": "Tourist Visa (Other Countries)",
+      "icon": "Luggage",
+      "short": "Tourist visa assistance for your holiday, family visit or sightseeing trip.",
+      "description": "Travelling somewhere other than Russia? Contact us with your destination and we will tell you whether we can assist and what you will need.\n\n## What we do\n\n- Explain visa type and requirements\n- Prepare your documentation\n- Support the application process",
+      "image": "",
+      "features": ["Requirement guidance", "Documentation support", "Application assistance"],
+      "documents": ["Passport", "Photographs", "Travel details", "Financial documents"]
+    },
+    {
+      "slug": "business-visa",
+      "title": "Business Visa (Other Countries)",
+      "icon": "Building2",
+      "short": "Business visa support for meetings, conferences and trade visits.",
+      "description": "We help business owners and professionals prepare complete and professional visa applications for business travel.\n\n## What we do\n\n- Identify the correct business visa category\n- Review supporting business documents\n- Prepare and check your application",
+      "image": "",
+      "features": ["Category guidance", "Business document review", "Application assistance"],
+      "documents": ["Passport", "Photographs", "Business invitation", "Company documents"]
+    },
+    {
+      "slug": "documentation-support",
+      "title": "Documentation Support",
+      "icon": "FileText",
+      "short": "Help arranging, checking and organising every document your visa needs.",
+      "description": "Most visa delays come from missing or incorrect documents. We review everything so your file is complete before it is submitted.\n\n## What we do\n\n- Share a clear checklist\n- Check each document for accuracy and validity\n- Advise on corrections and missing items\n- Organise the final file",
+      "image": "",
+      "features": ["Checklist", "Accuracy checks", "File organisation"],
+      "documents": []
+    },
+    {
+      "slug": "application-guidance",
+      "title": "Application and Process Guidance",
+      "icon": "Compass",
+      "short": "Step by step guidance through the whole visa process, so you never feel lost.",
+      "description": "Not sure where to start? We explain the process in simple language and walk with you until your application is submitted.\n\n## What we do\n\n- Explain each stage of the process\n- Help with forms and appointments where applicable\n- Answer your questions along the way",
+      "image": "",
+      "features": ["Simple explanations", "Form help", "Ongoing support"],
+      "documents": []
+    }
+  ],
+
+  "blog": [
+    {
+      "slug": "how-to-prepare-for-your-visa-application",
+      "title": "How to prepare for your visa application",
+      "date": "2026-10-15",
+      "author": "Disha Overseas",
+      "excerpt": "A few simple habits make visa applications faster and calmer. Here is where to begin.",
+      "image": "",
+      "content": "A good visa application starts well before you fill in any form. These simple steps help most applicants.\n\n## Check your passport first\n\nMake sure your passport has enough validity and blank pages for your trip. If it is close to expiring, renew it before you apply.\n\n## Decide your travel plan\n\nKnow your dates, cities and purpose of travel. Authorities want to see a clear and genuine plan.\n\n## Collect documents early\n\n- Passport and photographs\n- Travel and stay details\n- Financial documents\n- Any invitation or supporting letters\n\n## Apply with time to spare\n\nStart several weeks before travel. Rushed applications are more likely to have mistakes.\n\nIf you would like help, our team is happy to review your documents."
+    },
+    {
+      "slug": "tourist-vs-business-visa",
+      "title": "Tourist visa or business visa: which one do you need?",
+      "date": "2026-10-20",
+      "author": "Disha Overseas",
+      "excerpt": "The purpose of your trip decides your visa type. Choosing wrongly can cause delay or refusal.",
+      "image": "",
+      "content": "Choosing the correct visa category is the first step of any application.\n\n## Tourist visa\n\nFor holidays, sightseeing, and visiting friends or family. You will not be doing paid work or business there.\n\n## Business visa\n\nFor meetings, conferences, trade talks and other business activities. It usually needs supporting documents such as an invitation from a company.\n\n## Not sure?\n\nTell us about your trip and we will recommend the right category before you apply."
+    }
+  ],
+
+  "faqPage": {
+    "title": "Frequently asked questions",
+    "subtitle": "Can't find your answer? Call or message us and we will help."
+  },
+  "faqs": [
+    { "q": "What services does Disha Overseas provide?", "a": "We provide tourist visa and business visa assistance, including application support, documentation and guidance through the visa process. We have a special focus on Russia visas." },
+    { "q": "Where are you located?", "a": "Our office is in Gurugram, India. We also assist clients remotely over phone, WhatsApp and email." },
+    { "q": "Do you guarantee visa approval?", "a": "No. Visa decisions are made only by the embassy or authorities. We ensure your application and documents are complete, accurate and well prepared." },
+    { "q": "How long does a visa take?", "a": "Processing time depends on the country, the visa type and the season. We share the current expected timeline when you contact us." },
+    { "q": "What are your fees?", "a": "Our service fee is shared upfront, before you commit. Embassy or consulate fees are separate and set by the authorities." },
+    { "q": "Is my personal information safe?", "a": "Yes. We use your documents only for your visa application and do not share them for any other purpose." }
+  ],
+
+  "testimonials": [],
+
+  "contact": {
+    "title": "Contact us",
+    "subtitle": "Tell us about your trip. We usually respond the same working day.",
+    "formTitle": "Send us an enquiry",
+    "successMessage": "Thank you! We have received your enquiry and will contact you shortly.",
+    "infoTitle": "Visit or call us",
+    "mapEmbedUrl": ""
+  },
+
+  "legal": {
+    "privacy": {
+      "title": "Privacy Policy",
+      "updated": "2026-10-31",
+      "content": "Disha Overseas respects your privacy.\n\n## Information we collect\n\nWe collect the details you share with us through our forms, phone, email or WhatsApp, such as your name, contact details and documents needed for your visa application.\n\n## How we use it\n\n- To respond to your enquiry\n- To prepare and submit your visa application\n- To keep you updated about your application\n\n## Sharing\n\nWe share your information only with the relevant authorities or service providers as needed for your application. We do not sell your data.\n\n## Contact\n\nFor privacy questions, contact us using the details on our Contact page."
+    },
+    "terms": {
+      "title": "Terms and Conditions",
+      "updated": "2026-10-31",
+      "content": "By using our website and services you agree to these terms.\n\n## Nature of service\n\nDisha Overseas is a visa consultancy. We provide assistance with applications, documentation and guidance.\n\n## No guarantee\n\nVisa approval, processing time and fees charged by authorities are decided by the embassy or government. We do not guarantee approval.\n\n## Accurate information\n\nYou are responsible for giving us true and complete information and genuine documents.\n\n## Fees\n\nService fees are communicated before you proceed. Fees paid to embassies or authorities are separate.\n\n## Changes\n\nWe may update these terms from time to time."
+    }
+  }
+}
