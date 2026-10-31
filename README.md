@@ -87,3 +87,5 @@ netlify/lib/gh.mjs       GitHub + login helper
 scripts/seo.mjs          builds sitemap.xml before each build
 ```
 To add a new editable field: add it to `content/content.json`, to `admin/src/schema.js`, and use it in a page in `src/pages`.
+
+
