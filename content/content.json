@@ -4,13 +4,13 @@
     "tagline": "Visa consultancy, India",
     "logo": "/logo.png",
     "favicon": "/favicon.png",
-    "siteUrl": "",
+    "siteUrl": "https://dishaoverseas.in/",
     "primaryColor": "#0a2a66",
     "accentColor": "#d6202f",
-    "phone": "+9167890---098yu",
-    "whatsapp": "910000000000",
-    "email": "info@example.com",
-    "address": "India",
+    "phone": "+917889665740",
+    "whatsapp": "917889665740",
+    "email": "dishaoverseas1993@gmail.com",
+    "address": "1x61,1th Floor, Badshahpur Sohna Rd, D1 Block, Sector 47, Gurugram, Haryana 122018",
     "hours": "Mon to Sat, 10:00 AM to 7:00 PM",
     "topBarText": "Free first consultation for every visa enquiry",
     "nav": [
@@ -46,18 +46,18 @@
     "navCtaLabel": "Free consultation",
     "navCtaLink": "/contact",
     "social": {
-      "facebook": "",
-      "instagram": "",
-      "linkedin": "",
-      "youtube": "",
-      "twitter": ""
+      "facebook": "https://www.facebook.com/share/1BkR8fRixT/",
+      "instagram": "https://www.facebook.com/share/1BkR8fRixT/",
+      "linkedin": "https://www.facebook.com/share/1BkR8fRixT/",
+      "youtube": "https://www.facebook.com/share/1BkR8fRixT/",
+      "twitter": "https://www.facebook.com/share/1BkR8fRixT/"
     },
-    "footerAbout": "Disha Overseas is a visa consultancy based in India. We help travellers and business people with tourist and business visas for many countries, with special expertise in Russia.",
+    "footerAbout": "Disha Overseas is a visa consultancy in India providing tourist and business visa assistance for many countries, with special expertise in Russia visas. We focus on reliable, transparent and professional service from your first enquiry to final submission.",
     "copyright": "Disha Overseas. All rights reserved.",
-    "disclaimer": "Disha Overseas is a visa consultancy. We assist with applications and documentation. Visa decisions are made solely by the concerned embassy or government authority.",
+    "disclaimer": "Disha Overseas is a private visa consultancy and is not affiliated with any embassy, consulate or government authority. We assist with applications and documentation. Visa approval, processing time and official fees are decided solely by the concerned authority, and we do not guarantee approval.",
     "seo": {
-      "title": "Disha Overseas | Visa Consultancy in India | Tourist & Business Visas",
-      "description": "Disha Overseas, India: reliable and transparent tourist and business visa assistance for many countries, with special expertise in Russia visas.",
+      "title": "Disha Overseas | Visa Consultancy India | Russia Visas",
+      "description": "Trusted visa consultancy in India for tourist and business visas to many countries. Special expertise in Russia visas. Transparent, reliable support.",
       "image": ""
     }
   },
