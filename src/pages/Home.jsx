@@ -1,45 +1,43 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { DestCard, destLink } from './Destinations.jsx';
 import { useContent } from '../content.jsx';
 import { Icon, CheckCircle2, Star, Quote, ArrowRight } from '../icons.jsx';
 import { Btn, Img, SectionHead, Faq, CtaBand } from '../components/Common.jsx';
 import { useSeo } from '../utils.js';
 
-function RouteArt({ from, to, stampTitle, stampText }) {
+function VisaFinder() {
+  const { destinations, home: h } = useContent();
+  const nav = useNavigate();
+  const [slug, setSlug] = useState('');
+  const go = (e) => {
+    e.preventDefault();
+    const d = destinations.find((x) => x.slug === slug);
+    nav(d ? destLink(d) : '/destinations');
+  };
   return (
-    <div className="route-art" aria-hidden="true">
-      <svg viewBox="0 0 460 420" role="img">
-        <g fill="none" stroke="rgba(255,255,255,.12)">
-          <circle cx="230" cy="210" r="70" />
-          <circle cx="230" cy="210" r="120" />
-          <circle cx="230" cy="210" r="170" />
-          <circle cx="230" cy="210" r="220" />
-          <path d="M230 -10V430M10 210H450" />
-        </g>
-        <path id="flight" d="M70 330 C 110 130 300 70 390 120" fill="none" stroke="#fff" strokeWidth="2.5" strokeDasharray="3 9" strokeLinecap="round" />
-        <circle cx="70" cy="330" r="9" fill="#fff" />
-        <circle cx="390" cy="120" r="9" fill="var(--accent)" stroke="#fff" strokeWidth="3" />
-        <text x="70" y="362" textAnchor="middle" fill="#fff" fontSize="17" fontWeight="600">{from}</text>
-        <text x="390" y="100" textAnchor="middle" fill="#fff" fontSize="17" fontWeight="600">{to}</text>
-        <g transform="translate(235 118) rotate(18)">
-          <path d="M-14 6 L14 -2 L-14 -10 L-8 -2Z" fill="#fff" />
-        </g>
-      </svg>
-      <div className="stamp">
-        <strong>{stampTitle}</strong>
-        <span>{stampText}</span>
-      </div>
-    </div>
+    <form className="finder" onSubmit={go}>
+      <h3>{h.hero.finderTitle}</h3>
+      <p>{h.hero.finderText}</p>
+      <label>Where do you want to go?
+        <select value={slug} onChange={(e) => setSlug(e.target.value)}>
+          <option value="">Choose a country</option>
+          {destinations.map((d) => <option key={d.slug} value={d.slug}>{d.name}</option>)}
+        </select>
+      </label>
+      <button className="btn btn-primary">Check how we can help</button>
+      <small>Country not listed? <Link to="/contact">Ask us</Link>, we may still be able to help.</small>
+    </form>
   );
 }
 
 export default function Home() {
-  const { home: h, services, testimonials, faqs, settings } = useContent();
+  const { home: h, services, testimonials, faqs, destinations } = useContent();
   useSeo(null);
 
   return (
     <>
-      <section className="hero">
+      <section className="hero" style={h.hero.image ? { backgroundImage: `linear-gradient(160deg, rgba(6,26,66,.88), rgba(10,42,102,.8)), url(${h.hero.image})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}>
         <div className="container hero-grid">
           <div className="hero-copy">
             <span className="badge">{h.hero.badge}</span>
@@ -53,16 +51,7 @@ export default function Home() {
               {h.hero.points.map((p, i) => <li key={i}><CheckCircle2 size={18} aria-hidden="true" /> {p}</li>)}
             </ul>
           </div>
-          <div className="hero-visual">
-            {h.hero.image ? (
-              <div className="hero-photo">
-                <img src={h.hero.image} alt="" />
-                <div className="stamp"><strong>{h.hero.stampTitle}</strong><span>{h.hero.stampText}</span></div>
-              </div>
-            ) : (
-              <RouteArt from={h.hero.routeFrom} to={h.hero.routeTo} stampTitle={h.hero.stampTitle} stampText={h.hero.stampText} />
-            )}
-          </div>
+          <div className="hero-visual"><VisaFinder /></div>
         </div>
       </section>
 
@@ -75,6 +64,16 @@ export default function Home() {
       </section>
 
       <section className="section">
+        <div className="container">
+          <SectionHead title={h.destinationsIntro.title} subtitle={h.destinationsIntro.subtitle} />
+          <div className="grid grid-3">
+            {destinations.slice(0, 8).map((d) => <DestCard key={d.slug} d={d} />)}
+          </div>
+          <div className="center-btn"><Btn to="/destinations" variant="outline">See all destinations</Btn></div>
+        </div>
+      </section>
+
+      <section className="section section-tint">
         <div className="container">
           <SectionHead title={h.servicesIntro.title} subtitle={h.servicesIntro.subtitle} />
           <div className="grid grid-3">

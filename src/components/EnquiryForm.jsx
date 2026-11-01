@@ -4,8 +4,8 @@ import { waLink } from '../utils.js';
 
 const encode = (fd) => new URLSearchParams(fd).toString();
 
-export default function EnquiryForm({ title }) {
-  const { services, contact, settings } = useContent();
+export default function EnquiryForm({ title, country = '' }) {
+  const { services, destinations, contact, settings } = useContent();
   const [status, setStatus] = useState('idle');
 
   async function onSubmit(e) {
@@ -50,15 +50,24 @@ export default function EnquiryForm({ title }) {
       <label>Email
         <input name="email" type="email" autoComplete="email" />
       </label>
-      <label>I am interested in
-        <select name="service" defaultValue="">
-          <option value="" disabled>Choose a service</option>
-          {services.map((s) => <option key={s.slug} value={s.title}>{s.title}</option>)}
-          <option value="Other">Other / not sure</option>
-        </select>
-      </label>
+      <div className="form-row">
+        <label>Destination country
+          <select name="country" defaultValue={country}>
+            <option value="">Choose a country</option>
+            {destinations.map((d) => <option key={d.slug} value={d.name}>{d.name}</option>)}
+            <option value="Other">Other country</option>
+          </select>
+        </label>
+        <label>Visa type
+          <select name="service" defaultValue="">
+            <option value="" disabled>Choose a service</option>
+            {services.map((s) => <option key={s.slug} value={s.title}>{s.title}</option>)}
+            <option value="Other">Other / not sure</option>
+          </select>
+        </label>
+      </div>
       <label>Your message
-        <textarea name="message" rows={4} placeholder="Destination, travel dates, number of travellers..." />
+        <textarea name="message" rows={4} placeholder="Travel dates, number of travellers, any questions..." />
       </label>
       <button className="btn btn-primary" disabled={status === 'sending'}>
         {status === 'sending' ? 'Sending...' : 'Send enquiry'}

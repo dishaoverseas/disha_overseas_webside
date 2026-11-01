@@ -47,7 +47,7 @@ export function Header() {
 }
 
 export function Footer() {
-  const { settings: s, services } = useContent();
+  const { settings: s, destinations } = useContent();
   const year = new Date().getFullYear();
   return (
     <footer className="site-footer">
@@ -65,12 +65,13 @@ export function Footer() {
           <h4>Quick links</h4>
           <ul>
             {s.nav.map((n) => <li key={n.path}><Link to={n.path}>{n.label}</Link></li>)}
+            {!s.nav.some((n) => n.path === '/faq') && <li><Link to="/faq">FAQ</Link></li>}
           </ul>
         </div>
         <div>
-          <h4>Services</h4>
+          <h4>Destinations</h4>
           <ul>
-            {services.slice(0, 6).map((sv) => <li key={sv.slug}><Link to={`/services/${sv.slug}`}>{sv.title}</Link></li>)}
+            {destinations.slice(0, 7).map((d) => <li key={d.slug}><Link to={d.link || `/destinations/${d.slug}`}>{d.name}</Link></li>)}
           </ul>
         </div>
         <div>

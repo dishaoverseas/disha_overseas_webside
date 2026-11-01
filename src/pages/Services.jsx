@@ -9,7 +9,7 @@ import NotFound from './NotFound.jsx';
 
 export function Services() {
   const { services, home } = useContent();
-  useSeo('Visa Services', 'Tourist visa, business visa and Russia visa services from Disha Overseas, Gurugram.');
+  useSeo('Visa Services', 'Tourist visa, business visa and Russia visa services from Disha Overseas, India.');
   return (
     <>
       <PageHero title="Our visa services" subtitle="Tourist and business visa assistance, with a special focus on Russia." />
