@@ -31,6 +31,15 @@ export const SECTIONS = [
         t('siteUrl', 'Website address (needed for the sitemap)', { placeholder: 'https://www.yourdomain.com' }),
         { key: 'primaryColor', label: 'Main colour (navy)', type: 'color' },
         { key: 'accentColor', label: 'Accent colour (red)', type: 'color' },
+        {
+          key: 'fontPreset', label: 'Font style of the website', type: 'select', options: [
+            ['classic', 'Formal Classic: Playfair Display + Inter (recommended)'],
+            ['corporate', 'Corporate: Merriweather + Source Sans'],
+            ['modern', 'Modern Clean: Poppins + Inter'],
+            ['elegant', 'Elegant: Lora + Nunito Sans'],
+            ['traditional', 'Soft Traditional: Fraunces + Figtree'],
+          ],
+        },
         t('phone', 'Phone number'),
         t('whatsapp', 'WhatsApp number with country code, digits only', { placeholder: '919876543210' }),
         t('email', 'Email address'),

@@ -141,6 +141,14 @@ export function Field({ def, value, onChange }) {
           </select>
         </label>
       );
+    case 'select':
+      return (
+        <label className="field">{label}
+          <select value={value || def.options[0][0]} onChange={(e) => onChange(e.target.value)}>
+            {def.options.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+          </select>
+        </label>
+      );
     case 'image':
       return <div className="field">{label}<ImageField def={def} value={value} onChange={onChange} /></div>;
     case 'strings':

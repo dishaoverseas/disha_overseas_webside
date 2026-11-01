@@ -366,3 +366,24 @@ p { margin: 0 0 1em; }
   .dest-hero-in { flex-direction: column; align-items: flex-start; gap: 14px; }
   .finder { padding: 22px; }
 }
+
+/* ===== Formal fonts + WhatsApp button at top right (add to the END of src/styles.css) ===== */
+:root {
+  --font-head: 'Playfair Display', Georgia, serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+body { font-size: 16.5px; line-height: 1.7; }
+h1, h2, h3, h4 { font-weight: 700; letter-spacing: 0; line-height: 1.25; }
+h1 { font-size: clamp(2rem, 4.2vw, 3.1rem); }
+h2 { font-size: clamp(1.6rem, 2.8vw, 2.15rem); }
+h3 { font-size: 1.2rem; }
+.brand-text strong { font-size: 1.1rem; letter-spacing: .01em; }
+.stat strong { font-weight: 700; }
+
+/* WhatsApp: moved to the top right so the Netlify badge cannot hide it */
+.wa-float { top: 132px; bottom: auto; right: 16px; padding: 10px 16px; font-size: .92rem; gap: 8px; }
+.wa-float svg { width: 22px; height: 22px; }
+@media (max-width: 900px) { .wa-float { top: 124px; } }
+@media (max-width: 620px) {
+  .wa-float { top: 118px; right: 12px; padding: 11px; }
+}
