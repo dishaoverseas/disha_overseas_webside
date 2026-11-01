@@ -387,3 +387,7 @@ h3 { font-size: 1.2rem; }
 @media (max-width: 620px) {
   .wa-float { top: 118px; right: 12px; padding: 11px; }
 }
+
+/* ===== Hero spacing after removing the white strip (add to the END of src/styles.css) ===== */
+.hero-grid { padding-bottom: 84px; }
+@media (max-width: 900px) { .hero-grid { padding-bottom: 56px; } }

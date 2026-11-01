@@ -55,15 +55,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="stats">
-        <div className="container stats-grid">
-          {h.stats.map((s, i) => (
-            <div key={i} className="stat"><strong>{s.value}</strong><span>{s.label}</span></div>
-          ))}
-        </div>
-      </section>
-
-      <section className="section">
+            <section className="section">
         <div className="container">
           <SectionHead title={h.destinationsIntro.title} subtitle={h.destinationsIntro.subtitle} />
           <div className="grid grid-3">
