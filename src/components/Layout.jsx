@@ -3,7 +3,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useContent } from '../content.jsx';
 import { Phone, Mail, MapPin, Menu, X, MessageCircle, Facebook, Instagram, Linkedin, Youtube, Twitter } from '../icons.jsx';
 import { Btn } from './Common.jsx';
-import { waLink, telLink } from '../utils.js';
+import { waLink, telLink, track } from '../utils.js';
 
 const socialIcons = { facebook: Facebook, instagram: Instagram, linkedin: Linkedin, youtube: Youtube, twitter: Twitter };
 
@@ -99,7 +99,7 @@ export function WhatsAppFloat() {
   const { settings: s } = useContent();
   if (!s.whatsapp) return null;
   return (
-    <a className="wa-float" href={waLink(s.whatsapp)} target="_blank" rel="noreferrer" aria-label="Chat on WhatsApp">
+    <a className="wa-float" href={waLink(s.whatsapp)} target="_blank" rel="noreferrer" aria-label="Chat on WhatsApp" onClick={() => track('Contact')}>
       <MessageCircle size={26} />
       <span>Chat with us</span>
     </a>

@@ -1,6 +1,19 @@
+# Dependencies and build output
 node_modules
 dist
-.DS_Store
-*.log
-.env
 .netlify
+
+# Secrets and local settings (never commit these)
+.env
+.env.*
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode
+*.log
+
+# Private notes, not part of the website
+Meta ads roadmap.md
+Meta-Ads-Roadmap.md
+Meta_Ads_Roadmap.md

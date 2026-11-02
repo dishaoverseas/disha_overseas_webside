@@ -391,3 +391,39 @@ h3 { font-size: 1.2rem; }
 /* ===== Hero spacing after removing the white strip (add to the END of src/styles.css) ===== */
 .hero-grid { padding-bottom: 84px; }
 @media (max-width: 900px) { .hero-grid { padding-bottom: 56px; } }
+
+/* ===== Russia banner, step illustrations, mobile fixes (add to the END of src/styles.css) ===== */
+
+/* Russia banner: strong red highlight with a big flag */
+.russia-banner { background: linear-gradient(115deg, color-mix(in srgb, var(--accent) 55%, #000) 0%, var(--accent) 65%, color-mix(in srgb, var(--accent) 80%, #fff) 100%); padding: 84px 0; }
+.russia-banner::before { content: ''; position: absolute; inset: 0; background: radial-gradient(600px 300px at 85% 20%, rgba(255, 255, 255, .18), transparent 70%); pointer-events: none; }
+.russia-banner .container { position: relative; }
+.russia-banner h2 { font-size: clamp(1.9rem, 3.8vw, 2.9rem); color: #fff; max-width: 640px; }
+.russia-banner p { color: #fff; opacity: .95; font-size: 1.1rem; max-width: 600px; }
+.ru-badge { display: inline-block; background: #fff; color: var(--accent); font-weight: 700; font-size: .85rem; padding: 6px 16px; border-radius: 999px; margin-bottom: 18px; letter-spacing: .02em; }
+.ru-points { list-style: none; padding: 0; margin: 4px 0 28px; display: flex; flex-wrap: wrap; gap: 10px 22px; font-weight: 600; }
+.ru-points li { display: flex; align-items: center; gap: 8px; }
+.russia-banner .btn-light { background: #fff; color: var(--accent); font-weight: 700; }
+.russia-banner .btn-light:hover { background: #fff; transform: translateY(-1px); box-shadow: 0 10px 24px -10px rgba(0, 0, 0, .5); }
+.ru-flag { display: grid; place-items: center; }
+.flag-xl { width: min(320px, 80%); height: auto; aspect-ratio: 3 / 2; border: 7px solid #fff; border-radius: 16px; transform: rotate(-3deg); box-shadow: 0 30px 50px -20px rgba(0, 0, 0, .6); object-fit: cover; }
+
+/* Steps as illustrated cards */
+.steps { gap: 22px; }
+.steps li { background: #fff; border: 1px solid var(--navy-line); border-radius: 18px; padding: 0 22px 24px; overflow: hidden; position: relative; transition: box-shadow .2s, transform .2s; }
+.steps li:hover { box-shadow: var(--shadow); transform: translateY(-3px); }
+.steps li::after { display: none !important; }
+.step-art { margin: 0 -22px 18px; height: 150px; background: var(--navy-tint); display: grid; place-items: center; padding: 14px; }
+.step-art svg { height: 100%; width: auto; max-width: 100%; }
+.step-n { position: absolute; top: 12px; left: 14px; width: 36px; height: 36px; margin: 0; font-size: .95rem; box-shadow: 0 4px 10px -4px rgba(0, 0, 0, .4); }
+
+/* Mobile: slimmer header, WhatsApp button bottom left (Netlify badge is bottom right) */
+@media (max-width: 620px) {
+  .topbar-links a:nth-child(2) { display: none; }
+  .wa-float { top: auto; bottom: 16px; left: 12px; right: auto; }
+  .russia-banner { padding: 56px 0; }
+}
+
+/* Form fallback button */
+.form-error p { margin: 0 0 10px; }
+.form-error .btn-wa { margin-top: 0; }

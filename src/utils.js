@@ -25,3 +25,6 @@ export function useSeo(title, description) {
 }
 
 export const isExternal = (link = '') => /^(https?:|mailto:|tel:)/.test(link);
+
+// Meta (Facebook) Pixel events. Does nothing when no Pixel ID is set.
+export const track = (event) => { try { if (window.fbq) window.fbq('track', event); } catch { /* ignore */ } };

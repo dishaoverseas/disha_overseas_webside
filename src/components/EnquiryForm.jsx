@@ -1,30 +1,44 @@
 import React, { useState } from 'react';
 import { useContent } from '../content.jsx';
-import { waLink } from '../utils.js';
+import { waLink, track } from '../utils.js';
 
 const encode = (fd) => new URLSearchParams(fd).toString();
 
 export default function EnquiryForm({ title, country = '' }) {
   const { services, destinations, contact, settings } = useContent();
   const [status, setStatus] = useState('idle');
+  const [sent, setSent] = useState({});
 
   async function onSubmit(e) {
     e.preventDefault();
     const form = e.currentTarget;
+    const fd = new FormData(form);
+    setSent(Object.fromEntries(fd.entries()));
     setStatus('sending');
     try {
       const res = await fetch('/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: encode(new FormData(form)),
+        body: encode(fd),
       });
-      if (!res.ok) throw new Error('failed');
+      if (!res.ok) throw new Error(`status ${res.status}`);
       setStatus('done');
+      track('Lead');
       form.reset();
     } catch {
       setStatus('error');
     }
   }
+
+  // If the form could not be sent, the visitor can still reach us with the same details on WhatsApp
+  const fallbackText = [
+    'Hello Disha Overseas, I would like to enquire about a visa.',
+    sent.name && `Name: ${sent.name}`,
+    sent.phone && `Phone: ${sent.phone}`,
+    sent.country && `Country: ${sent.country}`,
+    sent.service && `Visa type: ${sent.service}`,
+    sent.message && `Message: ${sent.message}`,
+  ].filter(Boolean).join('\n');
 
   if (status === 'done')
     return (
@@ -73,9 +87,10 @@ export default function EnquiryForm({ title, country = '' }) {
         {status === 'sending' ? 'Sending...' : 'Send enquiry'}
       </button>
       {status === 'error' && (
-        <p className="form-error" role="alert">
-          We could not send your enquiry. Please try again, or <a href={waLink(settings.whatsapp)}>message us on WhatsApp</a>.
-        </p>
+        <div className="form-error" role="alert">
+          <p>We could not send your enquiry right now. Please send the same details on WhatsApp, we will reply quickly.</p>
+          <a className="btn btn-wa" href={waLink(settings.whatsapp, fallbackText)} target="_blank" rel="noreferrer" onClick={() => track('Contact')}>Send on WhatsApp instead</a>
+        </div>
       )}
     </form>
   );

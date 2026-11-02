@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { DestCard, destLink } from './Destinations.jsx';
+import { DestCard, destLink, Flag } from './Destinations.jsx';
+import { StepArt } from '../components/Illustrations.jsx';
 import { useContent } from '../content.jsx';
 import { Icon, CheckCircle2, Star, Quote, ArrowRight } from '../icons.jsx';
 import { Btn, Img, SectionHead, Faq, CtaBand } from '../components/Common.jsx';
@@ -32,7 +33,7 @@ function VisaFinder() {
 }
 
 export default function Home() {
-  const { home: h, services, testimonials, faqs, destinations } = useContent();
+  const { home: h, services, testimonials, faqs, destinations, russia } = useContent();
   useSeo(null);
 
   return (
@@ -85,11 +86,18 @@ export default function Home() {
       <section className="russia-banner">
         <div className="container russia-grid">
           <div>
+            <span className="ru-badge">Our speciality</span>
             <h2>{h.russiaBanner.title}</h2>
             <p>{h.russiaBanner.text}</p>
+            <ul className="ru-points">
+              {(russia?.visaTypes || []).map((v, i) => <li key={i}><CheckCircle2 size={18} aria-hidden="true" /> {v.title}</li>)}
+              <li><CheckCircle2 size={18} aria-hidden="true" /> Document review</li>
+            </ul>
             <Btn to={h.russiaBanner.button.link} variant="light" arrow>{h.russiaBanner.button.label}</Btn>
           </div>
-          {h.russiaBanner.image ? <Img src={h.russiaBanner.image} alt="Russia" className="russia-img" /> : <div className="russia-mark" aria-hidden="true"><span>RU</span></div>}
+          {h.russiaBanner.image
+            ? <Img src={h.russiaBanner.image} alt="Russia" className="russia-img" />
+            : <div className="ru-flag"><Flag code="ru" name="Russia" className="flag-xl" /></div>}
         </div>
       </section>
 
@@ -114,6 +122,7 @@ export default function Home() {
           <ol className="steps">
             {h.process.steps.map((s, i) => (
               <li key={i}>
+                <StepArt index={i} />
                 <span className="step-n">{i + 1}</span>
                 <h3>{s.title}</h3>
                 <p>{s.text}</p>

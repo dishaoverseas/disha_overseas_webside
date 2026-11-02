@@ -29,6 +29,7 @@ export const SECTIONS = [
         img('logo', 'Logo'),
         img('favicon', 'Browser tab icon (square image)'),
         t('siteUrl', 'Website address (needed for the sitemap)', { placeholder: 'https://www.yourdomain.com' }),
+        t('metaPixelId', 'Meta (Facebook) Pixel ID for ads tracking (optional)', { placeholder: 'numbers only, for example 123456789012345', help: 'From Meta Events Manager. Leave empty if you are not running Meta ads.' }),
         { key: 'primaryColor', label: 'Main colour (navy)', type: 'color' },
         { key: 'accentColor', label: 'Accent colour (red)', type: 'color' },
         {

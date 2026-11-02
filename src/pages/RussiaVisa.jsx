@@ -2,6 +2,7 @@ import React from 'react';
 import { useContent } from '../content.jsx';
 import { CheckCircle2 } from '../icons.jsx';
 import { PageHero, RichText, Faq, SectionHead, CtaBand } from '../components/Common.jsx';
+import { StepArt } from '../components/Illustrations.jsx';
 import EnquiryForm from '../components/EnquiryForm.jsx';
 import { useSeo } from '../utils.js';
 
@@ -50,7 +51,7 @@ export default function RussiaVisa() {
           <SectionHead title={r.steps.title} />
           <ol className="steps steps-5">
             {r.steps.items.map((s, i) => (
-              <li key={i}><span className="step-n">{i + 1}</span><h3>{s.title}</h3><p>{s.text}</p></li>
+              <li key={i}><StepArt index={i} /><span className="step-n">{i + 1}</span><h3>{s.title}</h3><p>{s.text}</p></li>
             ))}
           </ol>
         </div>

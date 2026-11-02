@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { ContentProvider, useContent } from './content.jsx';
 import { Header, Footer, WhatsAppFloat } from './components/Layout.jsx';
 import Home from './pages/Home.jsx';
@@ -45,10 +45,33 @@ function Theme() {
   return null;
 }
 
+// Meta (Facebook) Pixel: only loads when a Pixel ID is saved in Admin > Site settings
+function Analytics() {
+  const { settings: s } = useContent();
+  const { pathname } = useLocation();
+  const id = String(s.metaPixelId || '').trim();
+  const valid = /^\d{8,20}$/.test(id);
+  useEffect(() => {
+    if (!valid || window.fbq) return;
+    (function (f, b, e, v, n, t, x) {
+      if (f.fbq) return;
+      n = f.fbq = function () { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments); };
+      if (!f._fbq) f._fbq = n;
+      n.push = n; n.loaded = true; n.version = '2.0'; n.queue = [];
+      t = b.createElement(e); t.async = true; t.src = v;
+      x = b.getElementsByTagName(e)[0]; x.parentNode.insertBefore(t, x);
+    })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+    window.fbq('init', id);
+  }, [valid, id]);
+  useEffect(() => { if (valid && window.fbq) window.fbq('track', 'PageView'); }, [pathname, valid]);
+  return null;
+}
+
 export default function App() {
   return (
     <ContentProvider>
       <Theme />
+      <Analytics />
       <a href="#main" className="skip">Skip to content</a>
       <Header />
       <main id="main">

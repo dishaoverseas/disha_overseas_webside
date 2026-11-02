@@ -1,89 +1,105 @@
-# Disha Overseas: Website + Live Admin Panel (Netlify)
+# Disha Overseas: Website + Live Admin Panel
 
-The admin panel lives on your own website at **`https://yourdomain.com/admin`**.
-Log in from any phone or computer, change anything, press Save. The change is committed to GitHub using a token stored in Netlify, and Netlify rebuilds the site in about one minute.
+React website hosted on Netlify, with an admin panel at **`https://dishaoverseas.in/admin`**.
+Log in from any phone or computer, change anything, press **Save**. The change is committed to GitHub using a token stored in Netlify, and Netlify rebuilds the site in about one minute.
 
 ```
 /admin (login)  ->  Netlify Function  ->  GitHub (content/content.json)  ->  Netlify rebuild  ->  Live website
 ```
 
-No database and no separate server. All content is in `content/content.json` in your repository.
+No database and no separate server. All content lives in `content/content.json` in this repository.
 
-## 1. Put the code on GitHub
+## What the website has
 
-Create a **private** repository (recommended) and push this folder:
+Home (country finder, destinations, services, Russia highlight, how it works, FAQ), About (company and founder), Destinations (many countries, search and region filter, one page each), Services, Russia Visa, Blog, FAQ, Contact (enquiry form), Privacy Policy, Terms. A WhatsApp button is shown on every page.
 
-```bash
-git init
-git add .
-git commit -m "First version"
-git branch -M main
-git remote add origin https://github.com/YOUR-USERNAME/YOUR-REPO.git
-git push -u origin main
-```
+## What you can edit in the admin panel
 
-## 2. Create a GitHub token
+- **Site settings:** name, logo, colours, **font style** (5 presets), phone, WhatsApp, email, address, menu, social links, footer text, SEO, optional Meta Pixel ID.
+- **Pages:** Home, About (company and founder), Russia Visa, Contact, Privacy and Terms.
+- **Content:** Services, **Destinations (countries)**, Blog articles, FAQs, Testimonials.
+- **Account:** change the admin password. **Enquiries:** read contact form messages. **Connection:** check GitHub link.
 
-GitHub > Settings > Developer settings > Personal access tokens > **Fine-grained tokens** > Generate new token.
-- Repository access: **Only select repositories** > your website repo
-- Permissions > Repository permissions > **Contents: Read and write**
-- Copy the token (starts with `github_pat_`).
+Images are uploaded in the panel and resized automatically.
 
-## 3. Deploy on Netlify
+## 1. Environment variables (Netlify)
 
-Netlify > Add new site > Import an existing project > GitHub > choose the repo. Build settings come from `netlify.toml`.
-
-Then **Site configuration > Environment variables** and add:
+Netlify > Project configuration > **Environment variables**:
 
 | Name | Value |
 |---|---|
-| `GITHUB_TOKEN` | the token from step 2 |
-| `GITHUB_OWNER` | your GitHub username (or organisation) |
-| `GITHUB_REPO` | repository name |
-| `GITHUB_BRANCH` | `main` (optional, this is the default) |
-| `ADMIN_PASSWORD` | the password you want for logging in |
-| `NETLIFY_API_TOKEN` | optional, to read contact enquiries inside the admin (User settings > Applications > Personal access tokens) |
+| `GITHUB_TOKEN` | Fine-grained token for this repository only, permission **Contents: Read and write** |
+| `GITHUB_OWNER` | GitHub username or organisation that owns the repo |
+| `GITHUB_REPO` | Repository name |
+| `GITHUB_BRANCH` | `main` (optional, default) |
+| `ADMIN_PASSWORD` | Password for logging in to `/admin` |
+| `NETLIFY_API_TOKEN` | Optional. Lets the panel show enquiries (User settings > Applications > Personal access tokens) |
 
-After adding the variables, go to **Deploys > Trigger deploy > Clear cache and deploy site** (functions read the variables on the next deploy).
+After adding or changing variables: **Deploys > Trigger deploy > Clear cache and deploy site**.
+Never put the token in the code.
 
-## 4. Connect your domain
+## 2. Contact form (Netlify Forms)
 
-Netlify > Domain management > Add a domain. Either switch your domain's nameservers to Netlify, or add the A / CNAME records Netlify shows at your DNS provider. HTTPS is automatic.
-Then put your address (for example `https://www.yourdomain.com`) in Admin > Site settings > Website address, so the sitemap for Google is created.
+1. Netlify > **Forms** > make sure **form detection is enabled**, then redeploy.
+2. Send a test enquiry from the website. It appears in Netlify > Forms (turn on email notifications there).
+3. If sending ever fails, the visitor sees a button to send the same details on WhatsApp instead.
 
-## 5. Use the admin panel
+## 3. Domain
 
-Open `https://yourdomain.com/admin`, enter your password, edit any page and press **Save changes**. Your site updates in about a minute.
+Hostinger DNS: `A` record `@` to `75.2.60.5` and `CNAME` `www` to `<your-site>.netlify.app`. Then in Netlify > Domain management verify the domain and provision the HTTPS certificate.
+Put `https://dishaoverseas.in` in Admin > Site settings > Website address so the sitemap is created.
 
-- **Account** lets you change the password. The new password is stored as a salted hash in `content/admin-auth.json` in your repo (this is why a private repo is recommended). If you ever forget it, delete that file on GitHub and `ADMIN_PASSWORD` works again.
-- **Connection** shows whether GitHub is connected correctly.
-- **Enquiries** shows contact form messages (needs `NETLIFY_API_TOKEN`). They are also always in Netlify > Forms, where you can turn on email alerts.
+## 4. Working with Git
 
-## Good to know
+The admin panel commits to this repository too. So always pull before you push:
+
+```bash
+git pull origin main --no-rebase
+git push origin main
+```
+
+If you see a merge conflict in `content/content.json`, keep the version you want (`git checkout --ours content/content.json` keeps yours, `--theirs` keeps the one from GitHub), then `git add`, `git commit`, `git push`.
+
+**Netlify free plan:** a private repository allows only one Git contributor. Link your GitHub account in Netlify > Team settings > Git contributors, and use the same GitHub account for your commits.
+
+## 5. Password
+
+Change it in Admin > Account. The new password is stored as a salted hash in `content/admin-auth.json` (keep the repository **private**). If you forget it, delete that file on GitHub and `ADMIN_PASSWORD` works again.
+
+## 6. Meta (Facebook) ads tracking, optional
+
+Create a Pixel in Meta Events Manager, paste the Pixel ID in Admin > Site settings. The site then sends PageView, Lead (form sent) and Contact (WhatsApp click). Mention the Pixel in your Privacy Policy.
+
+## 7. Good to know
 
 - Each Save is one GitHub commit and one Netlify build (free plan: 300 build minutes per month). Make several edits on a page, then Save once.
-- Images are resized in your browser and saved to `public/uploads` in the repo. A new image appears on the site after the rebuild.
-- If you edit code yourself on your computer, run `git pull` first, because the admin panel commits to the same repo.
-- Keep `GITHUB_TOKEN` only in Netlify environment variables. Never put it in the code.
+- A new image appears on the live site after the rebuild.
+- Country flags load from flagcdn.com. Find country codes at flagcdn.com/en/codes.html.
+- Do not replace `content/content.json` with an older copy, because that removes edits made in the admin panel.
 
-## Test on your computer (optional)
+## Run on your computer (optional)
 
 ```bash
 npm install
-npm run dev                  # website only: http://localhost:5173 (admin needs the functions below)
+npm run dev            # website at http://localhost:5173
 npm i -g netlify-cli
-netlify dev                  # website + admin + functions: http://localhost:8888/admin
+netlify dev            # website + admin + functions at http://localhost:8888/admin
 ```
-For `netlify dev`, create a `.env` file with the same variables as step 3.
+For `netlify dev`, create a local `.env` file with the variables from step 1.
 
-## Structure
+## Project structure
 
 ```
-content/content.json     all website text (edited by the admin)
-src/                     React website
-admin/                   admin panel (React), served at /admin
-netlify/functions/       login, content, upload, password, status, enquiries
-netlify/lib/gh.mjs       GitHub + login helper
-scripts/seo.mjs          builds sitemap.xml before each build
+content/content.json         all website text (edited by the admin)
+src/                         React website
+  pages/                     Home, About, Destinations, Services, RussiaVisa, Blog, Misc
+  components/                Layout, forms, illustrations, shared parts
+admin/                       admin panel (React), served at /admin
+  src/schema.js              describes every editable field
+netlify/functions/           login, content, upload, password, status, enquiries
+netlify/lib/gh.mjs           GitHub and login helper
+scripts/seo.mjs              builds sitemap.xml before each build
+public/                      logo, favicon, uploaded images (public/uploads)
 ```
-To add a new editable field: add it to `content/content.json`, to `admin/src/schema.js`, and use it in a page in `src/pages`.
+
+To add a new editable field: add it to `content/content.json`, to `admin/src/schema.js`, and show it in a page in `src/pages`.
