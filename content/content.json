@@ -84,24 +84,7 @@
       "finderTitle": "Find your visa",
       "finderText": "Choose your destination to see how we can help."
     },
-    "stats": [
-      {
-        "value": "Many",
-        "label": "Destination countries"
-      },
-      {
-        "value": "2",
-        "label": "Visa types: tourist and business"
-      },
-      {
-        "value": "Russia",
-        "label": "Our specialist desk"
-      },
-      {
-        "value": "Clear",
-        "label": "Transparent process and fees"
-      }
-    ],
+    "stats": [],
     "servicesIntro": {
       "title": "Visa services we offer",
       "subtitle": "Pick the service that fits your trip. If you are not sure, talk to us and we will point you in the right direction."
