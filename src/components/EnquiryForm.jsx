@@ -33,12 +33,35 @@ export default function EnquiryForm({ title, country = '' }) {
     setLink(url);
     track('Lead');
 
-    // 3. Also keep a copy in Netlify Forms in the background (errors are ignored)
-    fetch('/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: encode(fd),
-    }).catch(() => {});
+    // 3. Background copies (errors are ignored so the visitor is never blocked)
+    //    a) Email to the owner through FormSubmit (address comes from Admin > Site settings)
+    //    b) A copy in Netlify Forms
+    if (!d['bot-field']) {
+      const to = (settings.enquiryEmail || settings.email || '').trim();
+      if (to) {
+        fetch(`https://formsubmit.co/ajax/${encodeURIComponent(to)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({
+            _subject: `New visa enquiry from ${d.name || 'website'}`,
+            _template: 'table',
+            _captcha: 'false',
+            Name: d.name || '',
+            Phone: d.phone || '',
+            email: d.email || '',
+            Destination: d.country || '',
+            'Visa type': d.service || '',
+            Message: d.message || '',
+            Page: window.location.href,
+          }),
+        }).catch(() => {});
+      }
+      fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: encode(fd),
+      }).catch(() => {});
+    }
 
     if (!win) window.location.href = url; // popup blocked: open in the same tab instead
     form.reset();
@@ -93,4 +116,4 @@ export default function EnquiryForm({ title, country = '' }) {
       <small className="form-note">WhatsApp will open with your details filled in. Press Send there to reach us.</small>
     </form>
   );
-}
+} 
