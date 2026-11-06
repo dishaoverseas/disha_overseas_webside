@@ -1,50 +1,56 @@
 import React, { useState } from 'react';
 import { useContent } from '../content.jsx';
+import { MessageCircle } from '../icons.jsx';
 import { waLink, track } from '../utils.js';
 
 const encode = (fd) => new URLSearchParams(fd).toString();
 
 export default function EnquiryForm({ title, country = '' }) {
-  const { services, destinations, contact, settings } = useContent();
-  const [status, setStatus] = useState('idle');
-  const [sent, setSent] = useState({});
+  const { services, destinations, settings } = useContent();
+  const [link, setLink] = useState('');
 
-  async function onSubmit(e) {
+  function onSubmit(e) {
     e.preventDefault();
     const form = e.currentTarget;
     const fd = new FormData(form);
-    setSent(Object.fromEntries(fd.entries()));
-    setStatus('sending');
-    try {
-      const res = await fetch('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: encode(fd),
-      });
-      if (!res.ok) throw new Error(`status ${res.status}`);
-      setStatus('done');
-      track('Lead');
-      form.reset();
-    } catch {
-      setStatus('error');
-    }
+    const d = Object.fromEntries(fd.entries());
+
+    // 1. Build the WhatsApp message from everything the visitor filled in
+    const text = [
+      'Hello Disha Overseas, I would like to enquire about a visa.',
+      '',
+      `Name: ${d.name || '-'}`,
+      `Phone: ${d.phone || '-'}`,
+      d.email && `Email: ${d.email}`,
+      d.country && `Destination: ${d.country}`,
+      d.service && `Visa type: ${d.service}`,
+      d.message && `Message: ${d.message}`,
+    ].filter((x) => x !== '' && x !== undefined && x !== false).join('\n');
+    const url = waLink(settings.whatsapp, text);
+
+    // 2. Open WhatsApp right away (must happen directly inside the click)
+    const win = window.open(url, '_blank', 'noopener');
+    setLink(url);
+    track('Lead');
+
+    // 3. Also keep a copy in Netlify Forms in the background (errors are ignored)
+    fetch('/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: encode(fd),
+    }).catch(() => {});
+
+    if (!win) window.location.href = url; // popup blocked: open in the same tab instead
+    form.reset();
   }
 
-  // If the form could not be sent, the visitor can still reach us with the same details on WhatsApp
-  const fallbackText = [
-    'Hello Disha Overseas, I would like to enquire about a visa.',
-    sent.name && `Name: ${sent.name}`,
-    sent.phone && `Phone: ${sent.phone}`,
-    sent.country && `Country: ${sent.country}`,
-    sent.service && `Visa type: ${sent.service}`,
-    sent.message && `Message: ${sent.message}`,
-  ].filter(Boolean).join('\n');
-
-  if (status === 'done')
+  if (link)
     return (
       <div className="form-card form-done" role="status">
-        <h3>Enquiry received</h3>
-        <p>{contact.successMessage}</p>
+        <h3>Almost done: tap Send in WhatsApp</h3>
+        <p>WhatsApp should have opened with your details already typed in. Just press the <b>Send</b> button there and our team will reply to you.</p>
+        <a className="btn btn-wa" href={link} target="_blank" rel="noreferrer"><MessageCircle size={18} /> WhatsApp did not open? Tap here</a>
+        <button type="button" className="btn btn-outline" onClick={() => setLink('')}>Fill another enquiry</button>
       </div>
     );
 
@@ -83,15 +89,8 @@ export default function EnquiryForm({ title, country = '' }) {
       <label>Your message
         <textarea name="message" rows={4} placeholder="Travel dates, number of travellers, any questions..." />
       </label>
-      <button className="btn btn-primary" disabled={status === 'sending'}>
-        {status === 'sending' ? 'Sending...' : 'Send enquiry'}
-      </button>
-      {status === 'error' && (
-        <div className="form-error" role="alert">
-          <p>We could not send your enquiry right now. Please send the same details on WhatsApp, we will reply quickly.</p>
-          <a className="btn btn-wa" href={waLink(settings.whatsapp, fallbackText)} target="_blank" rel="noreferrer" onClick={() => track('Contact')}>Send on WhatsApp instead</a>
-        </div>
-      )}
+      <button className="btn btn-wa btn-block"><MessageCircle size={18} /> Send on WhatsApp</button>
+      <small className="form-note">WhatsApp will open with your details filled in. Press Send there to reach us.</small>
     </form>
   );
 }

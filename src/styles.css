@@ -427,3 +427,9 @@ h3 { font-size: 1.2rem; }
 /* Form fallback button */
 .form-error p { margin: 0 0 10px; }
 .form-error .btn-wa { margin-top: 0; }
+
+/* ===== WhatsApp enquiry form (add to the END of src/styles.css) ===== */
+.btn-block { width: 100%; justify-content: center; margin-top: 0; padding: 14px 24px; }
+.form-note { color: var(--muted); text-align: center; font-size: .88rem; }
+.form-done .btn { margin: 6px 6px 0; }
+.form-done h3 { color: #178a47; }
