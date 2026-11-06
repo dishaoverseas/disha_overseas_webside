@@ -34,28 +34,14 @@ export default function EnquiryForm({ title, country = '' }) {
     track('Lead');
 
     // 3. Background copies (errors are ignored so the visitor is never blocked)
-    //    a) Email to the owner through FormSubmit (address comes from Admin > Site settings)
+    //    a) Email to the owner, sent from the business mailbox by our Netlify Function
     //    b) A copy in Netlify Forms
     if (!d['bot-field']) {
-      const to = (settings.enquiryEmail || settings.email || '').trim();
-      if (to) {
-        fetch(`https://formsubmit.co/ajax/${encodeURIComponent(to)}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-          body: JSON.stringify({
-            _subject: `New visa enquiry from ${d.name || 'website'}`,
-            _template: 'table',
-            _captcha: 'false',
-            Name: d.name || '',
-            Phone: d.phone || '',
-            email: d.email || '',
-            Destination: d.country || '',
-            'Visa type': d.service || '',
-            Message: d.message || '',
-            Page: window.location.href,
-          }),
-        }).catch(() => {});
-      }
+      fetch('/api/enquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...d, page: window.location.href }),
+      }).catch(() => {});
       fetch('/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -116,4 +102,4 @@ export default function EnquiryForm({ title, country = '' }) {
       <small className="form-note">WhatsApp will open with your details filled in. Press Send there to reach us.</small>
     </form>
   );
-} 
+}
