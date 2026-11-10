@@ -7,6 +7,9 @@ dist
 .env
 .env.*
 
+# Server data (content edits, uploads, enquiries, passwords). Never commit.
+data
+
 # OS and editor files
 .DS_Store
 Thumbs.db

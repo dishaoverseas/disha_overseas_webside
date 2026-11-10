@@ -60,7 +60,7 @@ function SectionEditor({ section, content, onSaved, toast }) {
       await api.save(section.key, value);
       setDraft(value); setDirty(false);
       onSaved(section.key, value);
-      toast('Saved! Your website will show the change in about 1 minute.');
+      toast('Saved! Your website is updated now.');
     } catch (e) { toast(e.message, true); }
     setBusy(false);
   }
@@ -83,7 +83,7 @@ function SectionEditor({ section, content, onSaved, toast }) {
   );
 }
 
-/* ---------------- Connection status ---------------- */
+/* ---------------- Server status ---------------- */
 function Connection() {
   const [s, setS] = useState(null);
   const [err, setErr] = useState('');
@@ -93,18 +93,20 @@ function Connection() {
   );
   return (
     <div>
-      <div className="page-title"><div><h1>Connection and setup</h1><p>How this admin panel talks to GitHub and Netlify.</p></div></div>
+      <div className="page-title"><div><h1>Server status</h1><p>Health of your website server.</p></div></div>
       {err && <div className="notice err">{err}</div>}
       {s && (
         <ul className="checklist">
-          <Row ok label={`Connected to GitHub repository ${s.owner}/${s.repo} (branch ${s.branch})`} />
-          <Row ok={s.canPush} label="Token can write to the repository" hint="Give the token the permission Contents: Read and write." />
-          <Row ok={s.private} label="Repository is private (recommended)" hint="Make the repository private on GitHub, because the password hash is stored in it after you change your password." />
-          <Row ok={s.passwordStoredInRepo} label="Password was changed inside the admin panel" hint="You are using the ADMIN_PASSWORD from Netlify. Change it from Account if you like." />
-          <Row ok={s.netlifyApi} label="Enquiries can be read here" hint="Optional: add NETLIFY_API_TOKEN (and NETLIFY_SITE_ID) in Netlify environment variables." />
+          <Row ok label={`Server is running (Node ${s.node}, up ${s.uptimeHours} hours)`} />
+          <Row ok={s.emailOn} label={s.emailOn ? `Enquiry emails are sent to ${s.emailTo}` : 'Enquiry email is not set up'} hint="Add SMTP_HOST, SMTP_USER and SMTP_PASS in the .env file on the server." />
+          <Row ok={s.sheetOn} label="Enquiries are added to Google Sheet" hint="Optional: add GOOGLE_SHEET_URL and GOOGLE_SHEET_SECRET in the .env file on the server." />
+          <Row ok={s.passwordChanged} label="Admin password was changed inside the panel" hint="You are using the ADMIN_PASSWORD from the server .env file. Change it from Account." />
+          <Row ok={s.backups > 0} label={`${s.backups} automatic content backups kept`} hint="A backup is made every time you save." />
+          <Row ok={s.backupOn && !s.backupError} label={s.backupOn ? (s.backupLast ? `GitHub safety backup done (${new Date(s.backupLast).toLocaleString('en-IN')})` : 'GitHub safety backup is waiting for the first run') : 'GitHub safety backup is off'} hint={s.backupError || 'Add GITHUB_TOKEN, GITHUB_OWNER and GITHUB_REPO to the server settings so your content is also kept on GitHub.'} />
+          <Row ok label={`Data folder: ${s.dataDir}`} />
         </ul>
       )}
-      <p className="help">Every time you press Save, the change is committed to GitHub. Netlify sees the commit and rebuilds your website, which takes about one minute.</p>
+      <p className="help">Every Save is written to a file on your server and a backup copy of the previous version is kept.</p>
     </div>
   );
 }
@@ -117,13 +119,13 @@ function Enquiries() {
   return (
     <div>
       <div className="page-title"><div><h1>Enquiries</h1><p>Messages sent through the contact forms on your website.</p></div></div>
-      {d.configured === false && <div className="notice">To see enquiries here, add <b>NETLIFY_API_TOKEN</b> in Netlify environment variables (User settings, Applications, Personal access tokens) and redeploy. You can always read them in the Netlify dashboard under <b>Forms</b>.</div>}
       {d.error && <div className="notice err">{d.error}</div>}
       <div className="enq">
         {d.items.map((s) => (
           <div key={s.id} className="enq-item">
             <div className="enq-top"><strong>{s.data?.name || 'Unknown'}</strong><span>{new Date(s.created_at).toLocaleString('en-IN')}</span></div>
             <p>{s.data?.phone && <a href={`tel:${s.data.phone}`}>{s.data.phone}</a>} {s.data?.email && <a href={`mailto:${s.data.email}`}>{s.data.email}</a>}</p>
+            {s.data?.country && <p><b>Destination:</b> {s.data.country}</p>}
             {s.data?.service && <p><b>Service:</b> {s.data.service}</p>}
             {s.data?.message && <p>{s.data.message}</p>}
           </div>
@@ -150,7 +152,7 @@ function Account({ toast }) {
           <label className="field"><span className="label">Current password</span><input type="password" value={cur} onChange={(e) => setCur(e.target.value)} required /></label>
           <label className="field"><span className="label">New password (at least 8 characters)</span><input type="password" value={nw} onChange={(e) => setNw(e.target.value)} minLength={8} required /></label>
           <button className="btn primary" disabled={busy}>{busy ? 'Changing...' : 'Change password'}</button>
-          <small className="help">If you ever forget the new password, delete the file <code>content/admin-auth.json</code> in your GitHub repository. The ADMIN_PASSWORD from Netlify will work again.</small>
+          <small className="help">If you ever forget the new password, delete the file <code>data/auth.json</code> on the server. The ADMIN_PASSWORD from the server .env file will work again.</small>
         </fieldset>
       </form>
     </div>
@@ -169,7 +171,7 @@ function Dashboard({ go }) {
   return (
     <div>
       <div className="page-title"><div><h1>Welcome back</h1><p>Pick a page from the menu on the left, change what you need and press Save.</p></div></div>
-      <div className="notice">Changes are saved straight to GitHub. Netlify then updates your live website in about <b>1 minute</b>. You can do this from any phone or computer.</div>
+      <div className="notice">Changes you save here go live on your website <b>immediately</b>. You can do this from any phone or computer.</div>
       <h2 className="h2">Things to do first</h2>
       <ul className="checklist">
         {steps.map(([to, text]) => <li key={to}><span>○</span><a href={`#${to}`} onClick={() => go(to)}>{text}</a></li>)}
@@ -211,7 +213,7 @@ function Shell({ onLogout }) {
           ))}
           <h4>Manage</h4>
           {link('enquiries', 'Enquiries')}
-          {link('connection', 'Connection')}
+          {link('connection', 'Server status')}
           {link('account', 'Account')}
           <a href="/" target="_blank" rel="noreferrer">Open live website</a>
           <a href="#logout" onClick={onLogout}>Log out</a>
@@ -221,7 +223,7 @@ function Shell({ onLogout }) {
       <div className="main">
         <header className="topbar">
           <button className="burger" onClick={() => setMenu(!menu)} aria-label="Menu">☰</button>
-          <div className={`pill ${lastSave ? 'warn' : 'good'}`}>{lastSave ? `Last saved ${lastSave}. Live in about 1 minute.` : 'Connected to GitHub'}</div>
+          <div className={`pill ${lastSave ? 'warn' : 'good'}`}>{lastSave ? `Last saved ${lastSave}. Live now.` : 'Connected to your server'}</div>
           <span className="spacer" />
           <a className="btn" href="/" target="_blank" rel="noreferrer">View website</a>
         </header>

@@ -3,8 +3,6 @@ import { useContent } from '../content.jsx';
 import { MessageCircle } from '../icons.jsx';
 import { waLink, track } from '../utils.js';
 
-const encode = (fd) => new URLSearchParams(fd).toString();
-
 export default function EnquiryForm({ title, country = '' }) {
   const { services, destinations, settings } = useContent();
   const [link, setLink] = useState('');
@@ -29,23 +27,19 @@ export default function EnquiryForm({ title, country = '' }) {
     const url = waLink(settings.whatsapp, text);
 
     // 2. Open WhatsApp right away (must happen directly inside the click)
-    const win = window.open(url, '_blank', 'noopener');
+    const win = window.open(url, '_blank');
+    if (win) win.opener = null;
     setLink(url);
     track('Lead');
 
     // 3. Background copies (errors are ignored so the visitor is never blocked)
-    //    a) Email to the owner, sent from the business mailbox by our Netlify Function
-    //    b) A copy in Netlify Forms
+    //    The server saves the enquiry, emails it to you and adds it to your Google Sheet
     if (!d['bot-field']) {
       fetch('/api/enquiry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...d, page: window.location.href }),
-      }).catch(() => {});
-      fetch('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: encode(fd),
+        keepalive: true, // keeps the request alive even if the page changes
       }).catch(() => {});
     }
 
@@ -64,9 +58,8 @@ export default function EnquiryForm({ title, country = '' }) {
     );
 
   return (
-    <form className="form-card" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" onSubmit={onSubmit}>
+    <form className="form-card" onSubmit={onSubmit}>
       {title && <h3>{title}</h3>}
-      <input type="hidden" name="form-name" value="contact" />
       <p className="hp"><label>Do not fill this: <input name="bot-field" tabIndex={-1} autoComplete="off" /></label></p>
       <div className="form-row">
         <label>Full name
