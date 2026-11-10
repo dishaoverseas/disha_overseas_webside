@@ -39,19 +39,28 @@ const SECRET_FILE = path.join(DATA, 'secret.txt');
 
 for (const d of [DATA, UPLOADS, BACKUPS]) fs.mkdirSync(d, { recursive: true });
 
-// Safety copy on GitHub (separate branch). If the hosting wiped our data, bring it back first.
+// Safety copy on GitHub (separate branch). Restored inside init() below, before the content is loaded.
 const backup = createBackup({ contentFile: CONTENT_FILE, uploadsDir: UPLOADS });
-if (backup.enabled() && (await backup.restore())) console.log('Restored missing data from the GitHub backup');
 
 // ---------- content store ----------
 const readJson = (f, fallback) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch { return fallback; } };
-const seed = readJson(SEED_FILE, {});
-let content = readJson(CONTENT_FILE, null);
-if (!content) { content = seed; fs.writeFileSync(CONTENT_FILE, JSON.stringify(content, null, 2) + '\n'); }
-// New sections added by code updates appear automatically, your edits are never overwritten
-let added = false;
-for (const [k, v] of Object.entries(seed)) if (!(k in content)) { content[k] = v; added = true; }
-if (added) fs.writeFileSync(CONTENT_FILE, JSON.stringify(content, null, 2) + '\n');
+let content = {};
+let ready = false;
+
+// Runs once after the server has started. (No top-level await: some hosts load this file with require().)
+async function init() {
+  if (backup.enabled() && (await backup.restore())) console.log('Restored missing data from the GitHub backup');
+  const seed = readJson(SEED_FILE, {});
+  let loaded = readJson(CONTENT_FILE, null);
+  if (!loaded) { loaded = seed; fs.writeFileSync(CONTENT_FILE, JSON.stringify(loaded, null, 2) + '\n'); }
+  // New sections added by code updates appear automatically, your edits are never overwritten
+  let added = false;
+  for (const [k, v] of Object.entries(seed)) if (!(k in loaded)) { loaded[k] = v; added = true; }
+  if (added) fs.writeFileSync(CONTENT_FILE, JSON.stringify(loaded, null, 2) + '\n');
+  content = loaded;
+  ready = true;
+  console.log('Content loaded. Website is ready.');
+}
 
 function saveContent() {
   const stamp = new Date().toISOString().replace(/[:.]/g, '-');
@@ -372,6 +381,8 @@ const server = http.createServer(async (req, res) => {
   if (req.headers['x-forwarded-proto'] === 'https') res.setHeader('strict-transport-security', 'max-age=31536000');
   try {
     const url = new URL(req.url, 'http://localhost');
+    if (url.pathname === '/api/health') return json(res, 200, { ok: true, ready });
+    if (!ready) { res.writeHead(503, { 'content-type': 'text/plain; charset=utf-8', 'retry-after': '5' }); return res.end('Starting up, please refresh in a few seconds.'); }
     if (url.pathname.startsWith('/api/')) return await api(req, res, url);
     if (req.method !== 'GET' && req.method !== 'HEAD') { res.writeHead(405); return res.end('Method not allowed'); }
     return website(req, res, url);
@@ -382,6 +393,7 @@ const server = http.createServer(async (req, res) => {
   }
 });
 server.listen(PORT, HOST, () => console.log(`Disha Overseas running on port ${PORT}  (data folder: ${DATA})`));
+init().catch((e) => { console.error('Start-up failed:', e); });
 ensureBuilt();                                     // build the website files if they are missing
 setTimeout(() => backup.run(), 20_000);            // sync once after start
 setInterval(() => backup.run(), 6 * 3600_000);     // and every 6 hours
