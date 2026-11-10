@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import zlib from 'node:zlib';
+import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { createBackup } from './backup.js';
 
@@ -263,6 +264,20 @@ async function api(req, res, url) {
   return json(res, 404, { error: 'Not found' });
 }
 
+// ---------- safety: build the website files if the hosting did not ----------
+let building = false;
+let lastBuildTry = 0;
+function ensureBuilt() {
+  if (fs.existsSync(path.join(DIST, 'index.html')) || building) return;
+  if (Date.now() - lastBuildTry < 5 * 60_000) return; // do not retry more than once every 5 minutes
+  lastBuildTry = Date.now();
+  building = true;
+  console.log('Website files (dist) not found. Building now, this takes 1 to 2 minutes...');
+  const child = spawn('npm', ['run', 'build'], { cwd: ROOT, stdio: 'inherit', shell: process.platform === 'win32' });
+  child.on('exit', (code) => { building = false; console.log(code === 0 ? 'Build finished.' : `Build failed (exit code ${code}).`); });
+  child.on('error', (e) => { building = false; console.error('Could not start the build:', e.message); });
+}
+
 // ---------- website files ----------
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.gif': 'image/gif', '.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.woff2': 'font/woff2', '.woff': 'font/woff', '.txt': 'text/plain; charset=utf-8', '.xml': 'application/xml', '.map': 'application/json' };
 const isFile = (f) => { try { return fs.statSync(f).isFile(); } catch { return false; } };
@@ -330,7 +345,11 @@ function website(req, res, url) {
     res.writeHead(404); return res.end('Not found');
   }
 
-  if (!fs.existsSync(path.join(DIST, 'index.html'))) { res.writeHead(503); return res.end('Website is not built yet. Run: npm run build'); }
+  if (!fs.existsSync(path.join(DIST, 'index.html'))) {
+    ensureBuilt();
+    res.writeHead(503, { 'content-type': 'text/html; charset=utf-8', 'retry-after': '30', 'cache-control': 'no-store' });
+    return res.end('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Updating</title><body style="font-family:sans-serif;text-align:center;padding:15vh 20px"><h1>We are updating our website</h1><p>Please refresh this page in a minute.</p>');
+  }
 
   const f = path.normalize(path.join(DIST, p));
   if (f.startsWith(DIST + path.sep) && isFile(f) && !p.endsWith('/')) {
@@ -363,6 +382,7 @@ const server = http.createServer(async (req, res) => {
   }
 });
 server.listen(PORT, HOST, () => console.log(`Disha Overseas running on port ${PORT}  (data folder: ${DATA})`));
+ensureBuilt();                                     // build the website files if they are missing
 setTimeout(() => backup.run(), 20_000);            // sync once after start
 setInterval(() => backup.run(), 6 * 3600_000);     // and every 6 hours
 // Never let one bad request stop the whole site
