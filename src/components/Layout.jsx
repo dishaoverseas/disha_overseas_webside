@@ -21,7 +21,8 @@ export function Header() {
           <span className="topbar-msg">{s.topBarText}</span>
           <div className="topbar-links">
             <a href={telLink(s.phone)}><Phone size={14} aria-hidden="true" /> {s.phone}</a>
-            <a href={`mailto:${s.email}`}><Mail size={14} aria-hidden="true" /> {s.email}</a>
+            {s.landline && <a href={telLink(s.landline)} className="tb-landline"><Phone size={14} aria-hidden="true" /> {s.landline} <small>(Office)</small></a>}
+            <a href={`mailto:${s.email}`} className="tb-email"><Mail size={14} aria-hidden="true" /> {s.email}</a>
           </div>
         </div>
       </div>
@@ -79,6 +80,7 @@ export function Footer() {
           <ul className="contact-list">
             <li><MapPin size={16} aria-hidden="true" /> {s.address}</li>
             <li><Phone size={16} aria-hidden="true" /> <a href={telLink(s.phone)}>{s.phone}</a></li>
+            {s.landline && <li><Phone size={16} aria-hidden="true" /> <a href={telLink(s.landline)}>{s.landline}</a> <span className="muted">(Office landline)</span></li>}
             <li><Mail size={16} aria-hidden="true" /> <a href={`mailto:${s.email}`}>{s.email}</a></li>
             <li className="muted">{s.hours}</li>
           </ul>

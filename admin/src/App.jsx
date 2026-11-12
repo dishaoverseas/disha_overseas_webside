@@ -87,24 +87,47 @@ function SectionEditor({ section, content, onSaved, toast }) {
 function Connection() {
   const [s, setS] = useState(null);
   const [err, setErr] = useState('');
-  useEffect(() => { api.status().then(setS).catch((e) => setErr(e.message)); }, []);
+  const [busy, setBusy] = useState('');
+  const [result, setResult] = useState({});
+  const load = () => api.status().then(setS).catch((e) => setErr(e.message));
+  useEffect(() => { load(); }, []);
+
+  async function runTest(what) {
+    setBusy(what);
+    try { const r = await api.test(what); setResult((x) => ({ ...x, [what]: r })); }
+    catch (e) { setResult((x) => ({ ...x, [what]: { ok: false, error: e.message } })); }
+    setBusy(''); load();
+  }
   const Row = ({ ok, label, hint }) => (
     <li className={ok ? 'done' : ''}><span>{ok ? '✓' : '✕'}</span><div><b>{label}</b>{!ok && hint && <small className="help">{hint}</small>}</div></li>
+  );
+  const Test = ({ what, title, last, on }) => (
+    <div className="stat-card" style={{ marginBottom: 12 }}>
+      <b>{title}</b>
+      <span>{on ? 'Set up on the server' : 'Not set up on the server yet'}</span>
+      {last?.at && <span>Last real enquiry: {last.ok ? 'worked' : 'FAILED'} ({new Date(last.at).toLocaleString('en-IN')})</span>}
+      {last && last.ok === false && <span className="err">Reason: {last.error}</span>}
+      <div><button className="btn small primary" onClick={() => runTest(what)} disabled={busy === what}>{busy === what ? 'Testing...' : `Send a test ${what === 'sheet' ? 'row to the Google Sheet' : 'email'}`}</button></div>
+      {result[what] && <span className={result[what].ok ? 'good' : 'err'}><b>{result[what].ok ? 'Test worked. Check your ' + (what === 'sheet' ? 'sheet for a new row.' : 'inbox (and spam folder).') : 'Test failed: ' + result[what].error}</b></span>}
+    </div>
   );
   return (
     <div>
       <div className="page-title"><div><h1>Server status</h1><p>Health of your website server.</p></div></div>
       {err && <div className="notice err">{err}</div>}
       {s && (
-        <ul className="checklist">
-          <Row ok label={`Server is running (Node ${s.node}, up ${s.uptimeHours} hours)`} />
-          <Row ok={s.emailOn} label={s.emailOn ? `Enquiry emails are sent to ${s.emailTo}` : 'Enquiry email is not set up'} hint="Add SMTP_HOST, SMTP_USER and SMTP_PASS in the .env file on the server." />
-          <Row ok={s.sheetOn} label="Enquiries are added to Google Sheet" hint="Optional: add GOOGLE_SHEET_URL and GOOGLE_SHEET_SECRET in the .env file on the server." />
-          <Row ok={s.passwordChanged} label="Admin password was changed inside the panel" hint="You are using the ADMIN_PASSWORD from the server .env file. Change it from Account." />
-          <Row ok={s.backups > 0} label={`${s.backups} automatic content backups kept`} hint="A backup is made every time you save." />
-          <Row ok={s.backupOn && !s.backupError} label={s.backupOn ? (s.backupLast ? `GitHub safety backup done (${new Date(s.backupLast).toLocaleString('en-IN')})` : 'GitHub safety backup is waiting for the first run') : 'GitHub safety backup is off'} hint={s.backupError || 'Add GITHUB_TOKEN, GITHUB_OWNER and GITHUB_REPO to the server settings so your content is also kept on GitHub.'} />
-          <Row ok label={`Data folder: ${s.dataDir}`} />
-        </ul>
+        <>
+          <ul className="checklist">
+            <Row ok label={`Server is running (Node ${s.node}, up ${s.uptimeHours} hours)`} />
+            <Row ok={s.passwordChanged} label="Admin password was changed inside the panel" hint="You are using the ADMIN_PASSWORD from the server settings. Change it from Account." />
+            <Row ok={s.backups > 0} label={`${s.backups} automatic content backups kept`} hint="A backup is made every time you save." />
+            <Row ok={s.backupOn && !s.backupError} label={s.backupOn ? (s.backupLast ? `GitHub safety backup done (${new Date(s.backupLast).toLocaleString('en-IN')})` : 'GitHub safety backup is waiting for the first run') : 'GitHub safety backup is off'} hint={s.backupError || 'Add GITHUB_TOKEN, GITHUB_OWNER and GITHUB_REPO to the server settings so your content is also kept on GitHub.'} />
+            <Row ok label={`Data folder: ${s.dataDir}`} />
+          </ul>
+          <h2 className="h2">Enquiry delivery</h2>
+          <Test what="email" title={`Email to ${s.emailTo || '(no address set)'}`} last={s.emailLast} on={s.emailOn} />
+          <Test what="sheet" title="Google Sheet" last={s.sheetLast} on={s.sheetOn} />
+        </>
       )}
       <p className="help">Every Save is written to a file on your server and a backup copy of the previous version is kept.</p>
     </div>

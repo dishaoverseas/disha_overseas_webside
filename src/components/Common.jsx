@@ -74,26 +74,26 @@ export const CtaBand = ({ data }) =>
 const inline = (s) =>
   s.split(/(\*\*[^*]+\*\*)/g).map((p, i) => (p.startsWith('**') && p.endsWith('**') ? <strong key={i}>{p.slice(2, -2)}</strong> : p));
 
+// Very small markup: blank line = paragraph, "# / ## / ### " = headings, "- " = bullet list, **bold**
 export const RichText = ({ text = '' }) => (
   <div className="rich">
-    {text.split(/\n\s*\n/).map((block, i) => {
+    {String(text).split(/\n\s*\n/).map((block, i) => {
       const t = block.trim();
       if (!t) return null;
-      if (t.startsWith('## ')) return <h3 key={i}>{inline(t.slice(3))}</h3>;
-      if (t.startsWith('# ')) return <h2 key={i}>{inline(t.slice(2))}</h2>;
       const lines = t.split('\n');
-      if (lines.every((l) => /^\s*[-*] /.test(l)))
-        return <ul key={i}>{lines.map((l, j) => <li key={j}>{inline(l.replace(/^\s*[-*] /, ''))}</li>)}</ul>;
-      // heading directly followed by text/list
-      if (lines[0].startsWith('## ')) {
+      const h = /^(#{1,4})\s+(.*)$/.exec(lines[0]);
+      if (h) {
+        const Tag = h[1].length === 1 ? 'h2' : h[1].length >= 4 ? 'h4' : 'h3';
         return (
           <React.Fragment key={i}>
-            <h3>{inline(lines[0].slice(3))}</h3>
-            <RichText text={lines.slice(1).join('\n')} />
+            <Tag>{inline(h[2])}</Tag>
+            {lines.length > 1 && <RichText text={lines.slice(1).join('\n')} />}
           </React.Fragment>
         );
       }
+      if (lines.every((l) => /^\s*[-*] /.test(l)))
+        return <ul key={i}>{lines.map((l, j) => <li key={j}>{inline(l.replace(/^\s*[-*] /, ''))}</li>)}</ul>;
       return <p key={i}>{lines.map((l, j) => <React.Fragment key={j}>{j > 0 && <br />}{inline(l)}</React.Fragment>)}</p>;
     })}
   </div>
-);
+);  

@@ -41,7 +41,8 @@ export const SECTIONS = [
             ['traditional', 'Soft Traditional: Fraunces + Figtree'],
           ],
         },
-        t('phone', 'Phone number'),
+        t('phone', 'Mobile / phone number'),
+        t('landline', 'Office landline number (optional)', { placeholder: 'for example 0124 4567890' }),
         t('whatsapp', 'WhatsApp number with country code, digits only', { placeholder: '919876543210' }),
         t('email', 'Email address (shown on the website)'),
         t('enquiryEmail', 'Email that receives enquiries (leave empty to use the email above)', { placeholder: 'yourname@gmail.com', help: 'Every enquiry from the website form is also sent to this address.' }),
@@ -100,7 +101,9 @@ export const SECTIONS = [
       type: 'object', fields: [
         obj('hero', 'Page heading', [t('title', 'Title'), ta('subtitle', 'Sub heading', { rows: 2 })]),
         obj('company', 'Company', [
-          t('title', 'Title'), ta('text', 'Company story', { rows: 8, help: RICH }), img('image', 'Photo (office, team, etc.)'),
+          t('title', 'Title'), ta('text', 'Company story', { rows: 8, help: RICH }), img('image', 'Main photo (office, team, etc.)'),
+          list('gallery', 'More photos (add as many as you like, they show as a gallery)', [img('image', 'Photo'), t('caption', 'Caption (optional)')], { itemTitle: 'caption' }),
+          t('galleryTitle', 'Gallery heading', { placeholder: 'Our office and team' }),
           ta('mission', 'Mission', { rows: 3 }), ta('vision', 'Vision', { rows: 3 }),
           list('values', 'Values', [icon(), t('title', 'Title'), ta('text', 'Text', { rows: 2 })], { itemTitle: 'title' }),
         ]),
@@ -225,4 +228,4 @@ export function blankFor(fields) {
     else o[f.key] = '';
   }
   return o;
-}
+} 

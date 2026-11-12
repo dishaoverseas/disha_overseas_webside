@@ -154,17 +154,31 @@ async function sendEmail(d, rows) {
       .map(([k, v]) => `<tr><td style="padding:6px 14px 6px 0;color:#555"><b>${esc(k)}</b></td><td style="padding:6px 0">${esc(v).replace(/\n/g, '<br>')}</td></tr>`).join('')}</table>`,
   });
 }
+// Result of the last email / sheet attempt, shown in Admin > Server status
+const integ = { email: { ok: null, error: null, at: null }, sheet: { ok: null, error: null, at: null } };
+const mark = (kind, ok, err) => { integ[kind] = { ok, error: ok ? null : String(err || 'Unknown error').slice(0, 400), at: new Date().toISOString() }; };
+
 async function addToSheet(d) {
+  const url = process.env.GOOGLE_SHEET_URL || '';
+  if (!/^https:\/\/script\.google(usercontent)?\.com\/.+\/exec/.test(url)) {
+    throw new Error('GOOGLE_SHEET_URL must be the Web app link that ends with /exec (not /dev, and not the link of the sheet itself).');
+  }
   const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), 12000);
+  const timer = setTimeout(() => ctrl.abort(), 15000);
   try {
-    const res = await fetch(process.env.GOOGLE_SHEET_URL, {
+    const res = await fetch(url, {
       method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({ ...d, secret: process.env.GOOGLE_SHEET_SECRET || '', notifyTo: process.env.EMAIL_VIA_SHEET ? recipient() : '' }), signal: ctrl.signal, redirect: 'follow',
     });
     const text = await res.text();
-    let out = {}; try { out = JSON.parse(text); } catch { /* not JSON */ }
-    if (!res.ok || out.ok === false) throw new Error(`Google Sheet said: ${out.error || res.status}`);
+    let out;
+    try { out = JSON.parse(text); } catch {
+      throw new Error('Google sent back a web page instead of the expected reply. In Apps Script open Deploy > Manage deployments: "Who has access" must be "Anyone", and after any code change create a New version and authorize again. Reply started with: ' + text.slice(0, 90).replace(/\s+/g, ' '));
+    }
+    if (out.ok !== true) throw new Error(`Google Sheet said: ${out.error || 'unknown error'}` + (out.error === 'wrong secret' ? ' (GOOGLE_SHEET_SECRET on the server must be exactly the same word as SECRET in the script)' : ''));
+  } catch (e) {
+    if (e.name === 'AbortError') throw new Error('Google Sheet did not answer within 15 seconds');
+    throw e;
   } finally { clearTimeout(timer); }
 }
 
@@ -209,7 +223,11 @@ async function api(req, res, url) {
     if (sheetOn) jobs.push(['sheet', addToSheet(d)]);
     const results = await Promise.allSettled(jobs.map(([, p]) => p));
     const status = { saved: true };
-    results.forEach((r, i) => { status[jobs[i][0]] = r.status === 'fulfilled'; if (r.status === 'rejected') console.error(`Enquiry ${jobs[i][0]} failed:`, r.reason?.message); });
+    results.forEach((r, i) => {
+      status[jobs[i][0]] = r.status === 'fulfilled';
+      mark(jobs[i][0], r.status === 'fulfilled', r.reason?.message);
+      if (r.status === 'rejected') console.error(`Enquiry ${jobs[i][0]} failed:`, r.reason?.message);
+    });
     return json(res, 200, { ok: true, ...status });
   }
 
@@ -250,6 +268,22 @@ async function api(req, res, url) {
     return json(res, 200, { ok: true });
   }
 
+  if (route === 'POST /api/test') {
+    const { what } = await readJsonBody(req);
+    const d = { name: 'TEST from admin panel', phone: '0000000000', email: '', country: '', service: '', message: 'This is a test message from the admin panel. You can delete this row or email.', page: 'admin test' };
+    const rows = [['Name', d.name], ['Phone', d.phone], ['Message', d.message]];
+    try {
+      if (what === 'sheet') {
+        if (!process.env.GOOGLE_SHEET_URL) throw new Error('GOOGLE_SHEET_URL is not set in the server settings (environment variables). Add it, then redeploy.');
+        await addToSheet(d); mark('sheet', true);
+      } else if (what === 'email') {
+        if (!(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS)) throw new Error('SMTP_HOST, SMTP_USER or SMTP_PASS is not set in the server settings (environment variables).');
+        await sendEmail(d, rows); mark('email', true);
+      } else return json(res, 400, { error: 'Unknown test' });
+      return json(res, 200, { ok: true });
+    } catch (e) { mark(what, false, e.message); return json(res, 200, { ok: false, error: e.message }); }
+  }
+
   if (route === 'GET /api/enquiries') return json(res, 200, { configured: true, items: readJson(ENQ_FILE, []) });
 
   if (route === 'GET /api/status') {
@@ -262,6 +296,8 @@ async function api(req, res, url) {
       emailOn: !!(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS),
       emailTo: recipient() || '',
       sheetOn: !!process.env.GOOGLE_SHEET_URL,
+      sheetLast: integ.sheet,
+      emailLast: integ.email,
       passwordChanged: fs.existsSync(AUTH_FILE),
       backupOn: backup.enabled(),
       backupLast: backup.state.last,

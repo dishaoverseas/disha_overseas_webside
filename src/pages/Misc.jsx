@@ -28,7 +28,7 @@ export function Contact() {
             <h2>{c.infoTitle}</h2>
             <ul className="info-list">
               <li><span className="icon-box"><MapPin /></span><div><strong>Address</strong><p>{s.address}</p></div></li>
-              <li><span className="icon-box"><Phone /></span><div><strong>Phone</strong><p><a href={telLink(s.phone)}>{s.phone}</a></p></div></li>
+              <li><span className="icon-box"><Phone /></span><div><strong>Phone</strong><p><a href={telLink(s.phone)}>{s.phone}</a>{s.landline && <><br /><a href={telLink(s.landline)}>{s.landline}</a> <span className="muted">(Office landline)</span></>}</p></div></li>
               <li><span className="icon-box"><Mail /></span><div><strong>Email</strong><p><a href={`mailto:${s.email}`}>{s.email}</a></p></div></li>
               <li><span className="icon-box"><Calendar /></span><div><strong>Working hours</strong><p>{s.hours}</p></div></li>
             </ul>
