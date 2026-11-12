@@ -58,6 +58,7 @@ export const SECTIONS = [
         ta('footerAbout', 'Footer description'),
         ta('disclaimer', 'Footer disclaimer'),
         t('copyright', 'Copyright text (the year is added automatically)'),
+        t('googleVerification', 'Google Search Console verification code (optional)', { placeholder: 'only the code, for example AbC123...', help: 'Used for the HTML tag method. Paste only the content value of the google-site-verification tag.' }),
         obj('seo', 'Search engine (SEO) defaults', [
           t('title', 'Home page title'), ta('description', 'Description (about 150 characters)', { rows: 3 }), img('image', 'Share image'),
         ]),
@@ -228,4 +229,4 @@ export function blankFor(fields) {
     else o[f.key] = '';
   }
   return o;
-} 
+}

@@ -362,12 +362,35 @@ function sendText(req, res, type, body, extra = {}) {
   res.end(buf);
 }
 
-function renderIndex() {
+function renderIndex(req, pagePath = '/') {
   const file = path.join(DIST, 'index.html');
   let html = fs.readFileSync(file, 'utf8');
   const s = content.settings || {};
-  const data = JSON.stringify(content).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
-  html = html.replace('</head>', () => `<script>window.__CONTENT__=${data}</script></head>`);
+  const base = baseUrl(req);
+  const abs = (u) => (!u ? '' : /^https?:/.test(u) ? u : base + (u.startsWith('/') ? u : '/' + u));
+  const safeJson = (o) => JSON.stringify(o).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
+  const title = s.seo?.title || s.siteName || 'Disha Overseas';
+  const desc = s.seo?.description || '';
+  const cleanPath = pagePath === '/' ? '/' : pagePath.replace(/\/+$/, '');
+  const url = base + (cleanPath === '/' ? '' : cleanPath);
+  const image = abs(s.seo?.image || s.logo);
+
+  const sameAs = Object.values(s.social || {}).filter((u) => /^https?:/.test(u));
+  const org = {
+    '@context': 'https://schema.org', '@type': 'Organization', name: s.siteName, url: base,
+    logo: abs(s.logo), ...(s.phone ? { telephone: s.phone } : {}), ...(s.email ? { email: s.email } : {}),
+    ...(s.address ? { address: { '@type': 'PostalAddress', streetAddress: s.address, addressCountry: 'IN' } } : {}),
+    ...(sameAs.length ? { sameAs: [...new Set(sameAs)] } : {}),
+  };
+  const tags = [];
+  if (/^[A-Za-z0-9_-]{20,80}$/.test(String(s.googleVerification || '').trim())) tags.push(`<meta name="google-site-verification" content="${esc(String(s.googleVerification).trim())}" />`);
+  tags.push(`<link rel="canonical" href="${esc(url)}" />`);
+  tags.push(`<meta property="og:type" content="website" />`, `<meta property="og:site_name" content="${esc(s.siteName || '')}" />`,
+    `<meta property="og:title" content="${esc(title)}" />`, `<meta property="og:description" content="${esc(desc)}" />`, `<meta property="og:url" content="${esc(url)}" />`);
+  if (image) tags.push(`<meta property="og:image" content="${esc(image)}" />`, `<meta name="twitter:card" content="summary" />`);
+  tags.push(`<script type="application/ld+json">${safeJson(org)}</script>`);
+  tags.push(`<script>window.__CONTENT__=${safeJson(content)}</script>`);
+  html = html.replace('</head>', () => `${tags.join('\n')}\n</head>`);
   if (s.seo?.title) html = html.replace(/<title>[\s\S]*?<\/title>/, () => `<title>${esc(s.seo.title)}</title>`);
   if (s.seo?.description) html = html.replace(/<meta name="description" content="[^"]*"/, () => `<meta name="description" content="${esc(s.seo.description)}"`);
   if (s.favicon) html = html.replace('href="/favicon.png"', () => `href="${esc(s.favicon)}"`);
@@ -406,7 +429,7 @@ function website(req, res, url) {
     if (isFile(a)) return sendText(req, res, MIME['.html'], fs.readFileSync(a, 'utf8'), { 'cache-control': 'no-store', 'x-robots-tag': 'noindex' });
   }
 
-  return sendText(req, res, MIME['.html'], renderIndex(), { 'cache-control': 'no-cache' });
+  return sendText(req, res, MIME['.html'], renderIndex(req, p), { 'cache-control': 'no-cache' });
 }
 
 // ---------- server ----------
