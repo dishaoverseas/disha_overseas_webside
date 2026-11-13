@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { DestCard, destLink, Flag } from './Destinations.jsx';
 import { StepArt } from '../components/Illustrations.jsx';
+import HeroGlobe from '../components/HeroGlobe.jsx';
 import { useContent } from '../content.jsx';
 import { Icon, CheckCircle2, Star, Quote, ArrowRight } from '../icons.jsx';
 import { Btn, Img, SectionHead, Faq, CtaBand } from '../components/Common.jsx';
@@ -17,17 +18,21 @@ function VisaFinder() {
     nav(d ? destLink(d) : '/destinations');
   };
   return (
-    <form className="finder" onSubmit={go}>
-      <h3>{h.hero.finderTitle}</h3>
-      <p>{h.hero.finderText}</p>
+    <form className="finder finder-wide" onSubmit={go}>
+      <div className="finder-text">
+        <h3>{h.hero.finderTitle}</h3>
+        <p>{h.hero.finderText}</p>
+      </div>
       <label>Where do you want to go?
         <select value={slug} onChange={(e) => setSlug(e.target.value)}>
           <option value="">Choose a country</option>
           {destinations.map((d) => <option key={d.slug} value={d.slug}>{d.name}</option>)}
         </select>
       </label>
-      <button className="btn btn-primary">Check how we can help</button>
-      <small>Country not listed? <Link to="/contact">Ask us</Link>, we may still be able to help.</small>
+      <div className="finder-go">
+        <button className="btn btn-primary">Check how we can help</button>
+        <small>Country not listed? <Link to="/contact">Ask us</Link></small>
+      </div>
     </form>
   );
 }
@@ -52,9 +57,11 @@ export default function Home() {
               {h.hero.points.map((p, i) => <li key={i}><CheckCircle2 size={18} aria-hidden="true" /> {p}</li>)}
             </ul>
           </div>
-          <div className="hero-visual"><VisaFinder /></div>
+          <div className="hero-visual"><HeroGlobe /></div>
         </div>
       </section>
+
+      <section className="finder-wrap"><div className="container"><VisaFinder /></div></section>
 
             <section className="section">
         <div className="container">
