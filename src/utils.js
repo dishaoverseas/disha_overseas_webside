@@ -20,7 +20,7 @@ export function useSeo(title, description) {
     document.title = title ? `${title} | ${base}` : settings.seo?.title || base;
     const meta = document.querySelector('meta[name="description"]');
     if (meta) meta.setAttribute('content', description || settings.seo?.description || '');
-    window.scrollTo({ top: 0 });
+    if (!window.location.hash) window.scrollTo({ top: 0 });
   }, [title, description, settings]);
 }
 

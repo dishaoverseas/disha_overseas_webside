@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { DestCard, destLink, Flag } from './Destinations.jsx';
+import { destLink, Flag } from './Destinations.jsx';
 import { StepArt } from '../components/Illustrations.jsx';
 import HeroGlobe from '../components/HeroGlobe.jsx';
+import Ticker from '../components/Ticker.jsx';
+import Showcase from '../components/Showcase.jsx';
+import Reviews from '../components/Reviews.jsx';
+import { Reveal } from '../components/Motion.jsx';
 import { useContent } from '../content.jsx';
 import { Icon, CheckCircle2, Star, Quote, ArrowRight } from '../icons.jsx';
 import { Btn, Img, SectionHead, Faq, CtaBand } from '../components/Common.jsx';
@@ -38,7 +42,7 @@ function VisaFinder() {
 }
 
 export default function Home() {
-  const { home: h, services, testimonials, faqs, destinations, russia } = useContent();
+  const { home: h, services, faqs, russia } = useContent();
   useSeo(null);
 
   return (
@@ -53,7 +57,7 @@ export default function Home() {
               <Btn to={h.hero.primaryBtn.link} arrow>{h.hero.primaryBtn.label}</Btn>
               <Btn to={h.hero.secondaryBtn.link} variant="ghost">{h.hero.secondaryBtn.label}</Btn>
             </div>
-            <ul className="hero-points">
+            <ul className="hero-points hero-points-copy">
               {h.hero.points.map((p, i) => <li key={i}><CheckCircle2 size={18} aria-hidden="true" /> {p}</li>)}
             </ul>
           </div>
@@ -61,38 +65,32 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="finder-wrap"><div className="container"><VisaFinder /></div></section>
+      <section className="finder-wrap" id="find"><div className="container"><VisaFinder /></div></section>
 
-            <section className="section">
-        <div className="container">
-          <SectionHead title={h.destinationsIntro.title} subtitle={h.destinationsIntro.subtitle} />
-          <div className="grid grid-3">
-            {destinations.slice(0, 8).map((d) => <DestCard key={d.slug} d={d} />)}
-          </div>
-          <div className="center-btn"><Btn to="/destinations" variant="outline">See all destinations</Btn></div>
-        </div>
-      </section>
+      <Ticker />
 
-      <section className="section section-tint">
+      <section className="section" id="services">
         <div className="container">
-          <SectionHead title={h.servicesIntro.title} subtitle={h.servicesIntro.subtitle} />
+          <Reveal><SectionHead title={h.servicesIntro.title} subtitle={h.servicesIntro.subtitle} /></Reveal>
           <div className="grid grid-3">
-            {services.slice(0, 6).map((s) => (
-              <Link to={`/services/${s.slug}`} key={s.slug} className="card service-card">
-                <span className="icon-box"><Icon name={s.icon} /></span>
-                <h3>{s.title}</h3>
-                <p>{s.short}</p>
-                <span className="more">Learn more <ArrowRight size={16} aria-hidden="true" /></span>
-              </Link>
+            {services.slice(0, 6).map((s, i) => (
+              <Reveal key={s.slug} delay={i * 0.07}>
+                <Link to={`/services/${s.slug}`} className="card service-card">
+                  <span className="icon-box"><Icon name={s.icon} /></span>
+                  <h3>{s.title}</h3>
+                  <p>{s.short}</p>
+                  <span className="more">Learn more <ArrowRight size={16} aria-hidden="true" /></span>
+                </Link>
+              </Reveal>
             ))}
           </div>
           <div className="center-btn"><Btn to="/services" variant="outline">View all services</Btn></div>
         </div>
       </section>
 
-      <section className="russia-banner">
+      <section className="russia-banner" id="russia">
         <div className="container russia-grid">
-          <div>
+          <Reveal from="left">
             <span className="ru-badge">Our speciality</span>
             <h2>{h.russiaBanner.title}</h2>
             <p>{h.russiaBanner.text}</p>
@@ -101,73 +99,61 @@ export default function Home() {
               <li><CheckCircle2 size={18} aria-hidden="true" /> Document review</li>
             </ul>
             <Btn to={h.russiaBanner.button.link} variant="light" arrow>{h.russiaBanner.button.label}</Btn>
-          </div>
-          {h.russiaBanner.image
-            ? <Img src={h.russiaBanner.image} alt="Russia" className="russia-img" />
-            : <div className="ru-flag"><Flag code="ru" name="Russia" className="flag-xl" /></div>}
+          </Reveal>
+          <Reveal from="right" delay={0.1}>
+            {h.russiaBanner.image
+              ? <Img src={h.russiaBanner.image} alt="Russia" className="russia-img" />
+              : <div className="ru-flag"><Flag code="ru" name="Russia" className="flag-xl" /></div>}
+          </Reveal>
         </div>
       </section>
 
-      <section className="section">
+      <Showcase />
+
+      <section className="section section-tint" id="why-us">
         <div className="container">
-          <SectionHead title={h.whyUs.title} subtitle={h.whyUs.subtitle} />
+          <Reveal><SectionHead title={h.whyUs.title} subtitle={h.whyUs.subtitle} /></Reveal>
           <div className="grid grid-3">
             {h.whyUs.items.map((it, i) => (
-              <div key={i} className="feature">
-                <span className="icon-box icon-accent"><Icon name={it.icon} /></span>
-                <h3>{it.title}</h3>
-                <p>{it.text}</p>
-              </div>
+              <Reveal key={i} delay={i * 0.07}>
+                <div className="feature">
+                  <span className="icon-box icon-accent"><Icon name={it.icon} /></span>
+                  <h3>{it.title}</h3>
+                  <p>{it.text}</p>
+                </div>
+              </Reveal>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="section section-tint">
+      <section className="section" id="process">
         <div className="container">
-          <SectionHead title={h.process.title} subtitle={h.process.subtitle} />
+          <Reveal><SectionHead title={h.process.title} subtitle={h.process.subtitle} /></Reveal>
           <ol className="steps">
             {h.process.steps.map((s, i) => (
-              <li key={i}>
+              <Reveal as="li" key={i} delay={i * 0.12}>
                 <StepArt index={i} />
                 <span className="step-n">{i + 1}</span>
                 <h3>{s.title}</h3>
                 <p>{s.text}</p>
-              </li>
+              </Reveal>
             ))}
           </ol>
         </div>
       </section>
 
-      {testimonials.length > 0 && (
-        <section className="section">
-          <div className="container">
-            <SectionHead title={h.testimonialsIntro.title} subtitle={h.testimonialsIntro.subtitle} />
-            <div className="grid grid-3">
-              {testimonials.map((t, i) => (
-                <figure key={i} className="card testi">
-                  <Quote size={28} className="q" aria-hidden="true" />
-                  <div className="stars" aria-label={`${t.rating} out of 5 stars`}>
-                    {Array.from({ length: Number(t.rating) || 5 }).map((_, k) => <Star key={k} size={16} fill="currentColor" />)}
-                  </div>
-                  <blockquote>{t.text}</blockquote>
-                  <figcaption><strong>{t.name}</strong><span>{[t.location, t.visa].filter(Boolean).join(', ')}</span></figcaption>
-                </figure>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+      <Reviews />
 
-      <section className="section section-tint">
+      <section className="section section-tint" id="faq">
         <div className="container narrow">
-          <SectionHead title={h.faqIntro.title} subtitle={h.faqIntro.subtitle} center />
-          <Faq items={faqs.slice(0, 5)} />
+          <Reveal><SectionHead title={h.faqIntro.title} subtitle={h.faqIntro.subtitle} center /></Reveal>
+          <Reveal><Faq items={faqs.slice(0, 5)} /></Reveal>
           <div className="center-btn"><Btn to="/faq" variant="outline">See all questions</Btn></div>
         </div>
       </section>
 
-      <CtaBand data={h.cta} />
+      <CtaBand data={h.cta} fly />
     </>
   );
 }

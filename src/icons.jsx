@@ -4,6 +4,7 @@ import {
   Star, Award, HeartHandshake, Stamp, FileCheck, Search, Headphones, BadgeCheck, Compass, Landmark,
   Luggage, CreditCard, Building2, MessageCircle, Sparkles, Target, Eye, Lightbulb, Handshake,
   Facebook, Instagram, Linkedin, Youtube, Twitter, ArrowRight, Menu, X, ChevronDown, Quote, Calendar,
+  Pause, Play, Send, ChevronRight,
 } from 'lucide-react';
 
 export const ICONS = {
@@ -17,4 +18,4 @@ export const Icon = ({ name, size = 22, ...rest }) => {
   return <C size={size} aria-hidden="true" {...rest} />;
 };
 
-export { Phone, Mail, MapPin, CheckCircle2, Star, Facebook, Instagram, Linkedin, Youtube, Twitter, ArrowRight, Menu, X, ChevronDown, Quote, Calendar, MessageCircle, Plane, Stamp };
+export { Phone, Mail, MapPin, CheckCircle2, Star, Facebook, Instagram, Linkedin, Youtube, Twitter, ArrowRight, Menu, X, ChevronDown, Quote, Calendar, MessageCircle, Plane, Stamp, Search, Pause, Play, Send, ChevronRight };

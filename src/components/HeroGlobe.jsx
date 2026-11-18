@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
+import { useContent } from '../content.jsx';
+import { CheckCircle2 } from '../icons.jsx';
 
-// Animated globe for the home page hero: routes are drawn from India to popular destinations
-// and planes fly along them. Pure SVG, no libraries. Respects "reduce motion" settings.
+// Animated globe for the home page hero: routes are drawn from India to popular destinations,
+// planes fly along them and the company logo spins in the middle like a 3D coin.
+// Pure SVG + CSS, no libraries. Respects "reduce motion" settings.
 const CX = 280, CY = 266, R = 205;
-const LON0 = 62;                         // the globe is centred on Asia / Europe
-const TILT = (16 * Math.PI) / 180;
+const LON0 = 75;                          // the globe is centred on Asia
+const TILT = (12 * Math.PI) / 180;
 const rad = (d) => (d * Math.PI) / 180;
 
 function project(lat, lon) {
@@ -13,12 +16,16 @@ function project(lat, lon) {
 }
 
 const DELHI = project(28.6, 77.2);
+// lab = [dx, dy, text-anchor] for the city label
 const DESTS = [
   { name: 'Russia', lat: 55.75, lon: 37.6, hot: true, dur: 6.6, begin: 1.3, draw: 0.3, lab: [13, -9, 'start'] },
-  { name: 'UK', lat: 51.5, lon: -0.1, dur: 7.4, begin: 3.4, draw: 0.9, lab: [-10, 4, 'end'] },
-  { name: 'UAE', lat: 25.2, lon: 55.3, dur: 5.2, begin: 2.4, draw: 0.6, lab: [-10, 5, 'end'] },
-  { name: 'Thailand', lat: 13.75, lon: 100.5, dur: 6, begin: 4.6, draw: 1.2, lab: [11, 5, 'start'] },
-  { name: 'Japan', lat: 35.7, lon: 139.7, dur: 8, begin: 5.6, draw: 1.5, lab: [11, 5, 'start'] },
+  { name: 'UK', lat: 51.5, lon: -0.1, dur: 7.8, begin: 3.6, draw: 0.8, lab: [-10, 4, 'end'] },
+  { name: 'Turkey', lat: 39.9, lon: 32.9, dur: 6.2, begin: 5.9, draw: 1.1, lab: [-10, 5, 'end'] },
+  { name: 'UAE', lat: 25.2, lon: 55.3, dur: 4.6, begin: 2.5, draw: 0.6, lab: [-10, 5, 'end'] },
+  { name: 'Thailand', lat: 13.75, lon: 100.5, dur: 5.6, begin: 4.4, draw: 1.3, lab: [11, 5, 'start'] },
+  { name: 'Singapore', lat: 1.35, lon: 103.8, dur: 6.4, begin: 7.2, draw: 1.6, lab: [11, 5, 'start'] },
+  { name: 'Japan', lat: 35.7, lon: 139.7, dur: 8, begin: 8.4, draw: 1.9, lab: [11, 5, 'start'] },
+  { name: 'Australia', lat: -33.9, lon: 151.2, dur: 8.6, begin: 6.1, draw: 2.2, lab: [-10, 18, 'end'] },
 ].map((d) => {
   const to = project(d.lat, d.lon);
   const mx = (DELHI[0] + to[0]) / 2, my = (DELHI[1] + to[1]) / 2;
@@ -39,9 +46,9 @@ const PLANE = 'M17 0 L7 -2.6 L-2 -14 L-5.5 -14 L-2.5 -2.6 L-11 -2.6 L-14 -6.5 L-
 
 const STARS = (() => {
   let s = 7; const rnd = () => ((s = (s * 16807) % 2147483647) / 2147483647);
-  return Array.from({ length: 22 }, () => {
-    const a = rnd() * Math.PI * 2, d = R * 1.12 + rnd() * 120;
-    return { x: CX + Math.cos(a) * d * 1.15, y: CY + Math.sin(a) * d * 0.9, r: 0.8 + rnd() * 1.4, t: 2.4 + rnd() * 3, b: rnd() * 3 };
+  return Array.from({ length: 30 }, () => {
+    const a = rnd() * Math.PI * 2, d = R * 1.1 + rnd() * 140;
+    return { x: CX + Math.cos(a) * d * 1.15, y: CY + Math.sin(a) * d * 0.95, r: 0.8 + rnd() * 1.5, t: 2.4 + rnd() * 3, b: rnd() * 3 };
   }).filter((p) => p.x > 6 && p.x < 554 && p.y > 6 && p.y < 514);
 })();
 
@@ -51,99 +58,141 @@ const MERIDIANS = [0, 1, 2, 3, 4, 5].map((i) => {
 });
 const PARALLELS = [-60, -30, 0, 30, 60].map((lat) => ({ lat, cy: CY - R * Math.sin(rad(lat)) * Math.cos(TILT), rx: R * Math.cos(rad(lat)), ry: R * Math.cos(rad(lat)) * Math.sin(TILT) }));
 
+// a satellite orbit around the globe (fills the space and adds depth)
+const ORBIT = { cx: CX, cy: CY + 8, rx: R + 62, ry: 66, rot: -16 };
+const ORBIT_PATH = `M${ORBIT.cx - ORBIT.rx} ${ORBIT.cy} a${ORBIT.rx} ${ORBIT.ry} 0 1 0 ${ORBIT.rx * 2} 0 a${ORBIT.rx} ${ORBIT.ry} 0 1 0 ${-ORBIT.rx * 2} 0`;
+
 export default function HeroGlobe() {
+  const { settings, home } = useContent();
+  const chips = home?.hero?.points || [];
   const [still] = useState(() => typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
   return (
-    <div className="hero-globe" aria-hidden="true">
-      <svg viewBox="0 0 560 520" role="img" focusable="false">
-        <defs>
-          <radialGradient id="hg-sphere" cx="38%" cy="32%" r="75%">
-            <stop offset="0" stopColor="#6c9bff" stopOpacity=".5" />
-            <stop offset=".6" stopColor="#2150b4" stopOpacity=".28" />
-            <stop offset="1" stopColor="#0a2a66" stopOpacity=".06" />
-          </radialGradient>
-          <radialGradient id="hg-glow" cx="50%" cy="50%" r="50%">
-            <stop offset=".84" stopColor="#8db8ff" stopOpacity="0" />
-            <stop offset=".96" stopColor="#8db8ff" stopOpacity=".38" />
-            <stop offset="1" stopColor="#8db8ff" stopOpacity="0" />
-          </radialGradient>
-          <pattern id="hg-dots" width="9" height="9" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1" fill="#fff" opacity=".17" /></pattern>
-          <clipPath id="hg-clip"><circle cx={CX} cy={CY} r={R} /></clipPath>
-        </defs>
+    <div className="hero-globe-wrap">
+      <div className="hero-globe" aria-hidden="true">
+        <svg viewBox="0 0 560 520" role="img" focusable="false">
+          <defs>
+            <radialGradient id="hg-sphere" cx="38%" cy="32%" r="75%">
+              <stop offset="0" stopColor="#6c9bff" stopOpacity=".5" />
+              <stop offset=".6" stopColor="#2150b4" stopOpacity=".28" />
+              <stop offset="1" stopColor="#0a2a66" stopOpacity=".06" />
+            </radialGradient>
+            <radialGradient id="hg-glow" cx="50%" cy="50%" r="50%">
+              <stop offset=".84" stopColor="#8db8ff" stopOpacity="0" />
+              <stop offset=".96" stopColor="#8db8ff" stopOpacity=".38" />
+              <stop offset="1" stopColor="#8db8ff" stopOpacity="0" />
+            </radialGradient>
+            <radialGradient id="hg-floor" cx="50%" cy="50%" r="50%">
+              <stop offset="0" stopColor="#5b8cff" stopOpacity=".35" />
+              <stop offset="1" stopColor="#5b8cff" stopOpacity="0" />
+            </radialGradient>
+            <pattern id="hg-dots" width="9" height="9" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1" fill="#fff" opacity=".17" /></pattern>
+            <clipPath id="hg-clip"><circle cx={CX} cy={CY} r={R} /></clipPath>
+          </defs>
 
-        {STARS.map((s, i) => (
-          <circle key={i} cx={s.x.toFixed(1)} cy={s.y.toFixed(1)} r={s.r.toFixed(1)} fill="#fff" opacity={still ? 0.5 : 0.2}>
-            {!still && <animate attributeName="opacity" values=".15;.95;.15" dur={`${s.t.toFixed(1)}s`} begin={`${s.b.toFixed(1)}s`} repeatCount="indefinite" />}
-          </circle>
-        ))}
-
-        <circle cx={CX} cy={CY} r={R + 26} fill="url(#hg-glow)" />
-        <circle cx={CX} cy={CY} r={R} fill="url(#hg-sphere)" />
-        <circle cx={CX} cy={CY} r={R} fill="url(#hg-dots)" />
-
-        <g clipPath="url(#hg-clip)" fill="none" stroke="#fff" strokeOpacity=".2" strokeWidth="1">
-          {PARALLELS.map((p) => <ellipse key={p.lat} cx={CX} cy={p.cy.toFixed(1)} rx={p.rx.toFixed(1)} ry={p.ry.toFixed(1)} strokeOpacity={p.lat === 0 ? 0.34 : 0.2} />)}
-          {MERIDIANS.map((m) => (
-            <ellipse key={m.i} cx={CX} cy={CY} rx={still ? m.still : 0} ry={R}>
-              {!still && <animate attributeName="rx" values={m.vals} dur="42s" repeatCount="indefinite" />}
-            </ellipse>
+          {STARS.map((s, i) => (
+            <circle key={i} cx={s.x.toFixed(1)} cy={s.y.toFixed(1)} r={s.r.toFixed(1)} fill="#fff" opacity={still ? 0.5 : 0.2}>
+              {!still && <animate attributeName="opacity" values=".15;.95;.15" dur={`${s.t.toFixed(1)}s`} begin={`${s.b.toFixed(1)}s`} repeatCount="indefinite" />}
+            </circle>
           ))}
-        </g>
-        <circle cx={CX} cy={CY} r={R} fill="none" stroke="#bcd4ff" strokeOpacity=".45" strokeWidth="1.4" />
 
-        {DESTS.map((d) => (
-          <g key={d.name}>
-            <path d={d.path} pathLength="1" className="route-base" stroke={d.hot ? '#ff6b78' : '#cfe0ff'} />
-            <path d={d.path} pathLength="1" className="route-draw" stroke={d.hot ? '#ff6b78' : '#e8f0ff'} style={{ '--d': `${d.draw}s` }} />
+          <ellipse cx={CX} cy={CY + R + 22} rx={R * 0.95} ry="26" fill="url(#hg-floor)" />
+
+          {/* orbit ring behind the globe */}
+          <g transform={`rotate(${ORBIT.rot} ${CX} ${CY})`}>
+            <ellipse cx={ORBIT.cx} cy={ORBIT.cy} rx={ORBIT.rx} ry={ORBIT.ry} fill="none" stroke="#9fc0ff" strokeOpacity=".28" strokeDasharray="3 7" />
+            {!still && (
+              <circle r="4.2" fill="#fff">
+                <animateMotion path={ORBIT_PATH} dur="16s" repeatCount="indefinite" />
+              </circle>
+            )}
           </g>
-        ))}
 
-        {DESTS.map((d) => {
-          const [lx, ly, anchor] = d.lab;
-          return (
-            <g key={d.name + '-city'}>
-              <circle cx={d.to[0].toFixed(1)} cy={d.to[1].toFixed(1)} r={d.hot ? 5.5 : 4} fill={d.hot ? '#ff4d5e' : '#fff'} stroke="#0a2a66" strokeWidth="1.5" />
-              {d.hot && !still && (
-                <circle cx={d.to[0].toFixed(1)} cy={d.to[1].toFixed(1)} r="6" fill="none" stroke="#ff6b78" strokeWidth="2">
-                  <animate attributeName="r" values="6;22" dur="2.2s" repeatCount="indefinite" />
-                  <animate attributeName="opacity" values=".8;0" dur="2.2s" repeatCount="indefinite" />
-                </circle>
-              )}
-              <text x={(d.to[0] + lx).toFixed(1)} y={(d.to[1] + ly).toFixed(1)} textAnchor={anchor} className={d.hot ? 'city-label hot' : 'city-label'}>{d.name}</text>
+          <circle cx={CX} cy={CY} r={R + 26} fill="url(#hg-glow)" />
+          <circle cx={CX} cy={CY} r={R} fill="url(#hg-sphere)" />
+          <circle cx={CX} cy={CY} r={R} fill="url(#hg-dots)" />
+
+          <g clipPath="url(#hg-clip)" fill="none" stroke="#fff" strokeOpacity=".2" strokeWidth="1">
+            {PARALLELS.map((p) => <ellipse key={p.lat} cx={CX} cy={p.cy.toFixed(1)} rx={p.rx.toFixed(1)} ry={p.ry.toFixed(1)} strokeOpacity={p.lat === 0 ? 0.34 : 0.2} />)}
+            {MERIDIANS.map((m) => (
+              <ellipse key={m.i} cx={CX} cy={CY} rx={still ? m.still : 0} ry={R}>
+                {!still && <animate attributeName="rx" values={m.vals} dur="42s" repeatCount="indefinite" />}
+              </ellipse>
+            ))}
+          </g>
+          <circle cx={CX} cy={CY} r={R} fill="none" stroke="#bcd4ff" strokeOpacity=".45" strokeWidth="1.4" />
+
+          {DESTS.map((d) => (
+            <g key={d.name}>
+              <path d={d.path} pathLength="1" className="route-base" stroke={d.hot ? '#ff6b78' : '#cfe0ff'} />
+              <path d={d.path} pathLength="1" className="route-draw" stroke={d.hot ? '#ff6b78' : '#e8f0ff'} style={{ '--d': `${d.draw}s` }} />
             </g>
-          );
-        })}
+          ))}
 
-        <circle cx={DELHI[0].toFixed(1)} cy={DELHI[1].toFixed(1)} r="6" fill="#fff" stroke="#0a2a66" strokeWidth="2" />
-        {!still && (
-          <circle cx={DELHI[0].toFixed(1)} cy={DELHI[1].toFixed(1)} r="6" fill="none" stroke="#fff" strokeWidth="2">
-            <animate attributeName="r" values="6;26" dur="2.6s" repeatCount="indefinite" />
-            <animate attributeName="opacity" values=".85;0" dur="2.6s" repeatCount="indefinite" />
-          </circle>
-        )}
-        <text x={(DELHI[0] + 12).toFixed(1)} y={(DELHI[1] + 21).toFixed(1)} className="city-label home">India</text>
-
-        {DESTS.map((d) => (
-          still ? (
-            <g key={d.name + '-plane'} transform={midPose(d)}>
-              <path d={PLANE} fill="#fff" />
-            </g>
-          ) : (
-            <g key={d.name + '-plane'}>
-              <path d={d.path} pathLength="1" fill="none" stroke={d.hot ? '#ffb3ba' : '#fff'} strokeWidth="3" strokeLinecap="round" strokeDasharray="0.16 1" strokeDashoffset="0.16" opacity="0">
-                <animate attributeName="stroke-dashoffset" values="0.16;-0.84" keyTimes="0;1" calcMode="spline" keySplines=".35 0 .65 1" dur={`${d.dur}s`} begin={`${d.begin}s`} repeatCount="indefinite" />
-                <animate attributeName="opacity" values="0;.85;.85;0" keyTimes="0;.12;.88;1" dur={`${d.dur}s`} begin={`${d.begin}s`} repeatCount="indefinite" />
-              </path>
-              <g opacity="0">
-                <g transform={`scale(${d.hot ? 1.5 : 1.15})`}><path d={PLANE} fill="#fff" stroke={d.hot ? '#d6202f' : 'none'} strokeWidth="1.2" /></g>
-                <animateMotion path={d.path} dur={`${d.dur}s`} begin={`${d.begin}s`} repeatCount="indefinite" rotate="auto" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines=".35 0 .65 1" />
-                <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.1;.9;1" dur={`${d.dur}s`} begin={`${d.begin}s`} repeatCount="indefinite" />
+          {DESTS.map((d) => {
+            const [lx, ly, anchor] = d.lab;
+            return (
+              <g key={d.name + '-city'}>
+                <circle cx={d.to[0].toFixed(1)} cy={d.to[1].toFixed(1)} r={d.hot ? 5.5 : 4} fill={d.hot ? '#ff4d5e' : '#fff'} stroke="#0a2a66" strokeWidth="1.5" />
+                {d.hot && !still && (
+                  <circle cx={d.to[0].toFixed(1)} cy={d.to[1].toFixed(1)} r="6" fill="none" stroke="#ff6b78" strokeWidth="2">
+                    <animate attributeName="r" values="6;22" dur="2.2s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" values=".8;0" dur="2.2s" repeatCount="indefinite" />
+                  </circle>
+                )}
+                <text x={(d.to[0] + lx).toFixed(1)} y={(d.to[1] + ly).toFixed(1)} textAnchor={anchor} className={d.hot ? 'city-label hot' : 'city-label'}>{d.name}</text>
               </g>
-            </g>
-          )
-        ))}
-      </svg>
+            );
+          })}
+
+          <circle cx={DELHI[0].toFixed(1)} cy={DELHI[1].toFixed(1)} r="6" fill="#fff" stroke="#0a2a66" strokeWidth="2" />
+          {!still && (
+            <circle cx={DELHI[0].toFixed(1)} cy={DELHI[1].toFixed(1)} r="6" fill="none" stroke="#fff" strokeWidth="2">
+              <animate attributeName="r" values="6;26" dur="2.6s" repeatCount="indefinite" />
+              <animate attributeName="opacity" values=".85;0" dur="2.6s" repeatCount="indefinite" />
+            </circle>
+          )}
+          <text x={(DELHI[0] + 12).toFixed(1)} y={(DELHI[1] + 21).toFixed(1)} className="city-label home">India</text>
+
+          {DESTS.map((d) => (
+            still ? (
+              <g key={d.name + '-plane'} transform={midPose(d)}>
+                <path d={PLANE} fill="#fff" />
+              </g>
+            ) : (
+              <g key={d.name + '-plane'}>
+                <path d={d.path} pathLength="1" fill="none" stroke={d.hot ? '#ffb3ba' : '#fff'} strokeWidth="3" strokeLinecap="round" strokeDasharray="0.16 1" strokeDashoffset="0.16" opacity="0">
+                  <animate attributeName="stroke-dashoffset" values="0.16;-0.84" keyTimes="0;1" calcMode="spline" keySplines=".35 0 .65 1" dur={`${d.dur}s`} begin={`${d.begin}s`} repeatCount="indefinite" />
+                  <animate attributeName="opacity" values="0;.85;.85;0" keyTimes="0;.12;.88;1" dur={`${d.dur}s`} begin={`${d.begin}s`} repeatCount="indefinite" />
+                </path>
+                <g opacity="0">
+                  <g transform={`scale(${d.hot ? 1.5 : 1.15})`}><path d={PLANE} fill="#fff" stroke={d.hot ? '#d6202f' : 'none'} strokeWidth="1.2" /></g>
+                  <animateMotion path={d.path} dur={`${d.dur}s`} begin={`${d.begin}s`} repeatCount="indefinite" rotate="auto" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines=".35 0 .65 1" />
+                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.1;.9;1" dur={`${d.dur}s`} begin={`${d.begin}s`} repeatCount="indefinite" />
+                </g>
+              </g>
+            )
+          ))}
+        </svg>
+
+        {/* the company logo spinning like a 3D coin inside the globe */}
+        {settings?.logo && (
+          <div className="globe-logo">
+            <div className="logo-glow" />
+            <div className={`coin ${still ? 'still' : ''}`}>
+              {Array.from({ length: 9 }).map((_, i) => <span key={i} className="coin-edge" style={{ '--i': i }} />)}
+              <span className="coin-face front"><img src={settings.logo} alt="" /></span>
+              <span className="coin-face back"><img src={settings.logo} alt="" /></span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {chips.length > 0 && (
+        <div className="globe-chips" aria-hidden="true">
+          {chips.slice(0, 3).map((c, i) => <span key={i} className={`gchip gchip-${i + 1}`}><CheckCircle2 size={16} />{c}</span>)}
+        </div>
+      )}
     </div>
   );
 }

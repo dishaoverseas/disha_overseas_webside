@@ -57,9 +57,12 @@ export const Faq = ({ items = [] }) => (
   </div>
 );
 
-export const CtaBand = ({ data }) =>
+export const CtaBand = ({ data, fly }) =>
   data ? (
     <section className="cta-band">
+      {fly && (
+        <svg className="cta-plane" viewBox="-20 -16 40 32" aria-hidden="true"><path d="M17 0 L7 -2.6 L-2 -14 L-5.5 -14 L-2.5 -2.6 L-11 -2.6 L-14 -6.5 L-16.5 -6.5 L-14 0 L-16.5 6.5 L-14 6.5 L-11 2.6 L-2.5 2.6 L-5.5 14 L-2 14 L7 2.6 Z" fill="currentColor" /></svg>
+      )}
       <div className="container cta-inner">
         <div>
           <h2>{data.title}</h2>
@@ -96,4 +99,4 @@ export const RichText = ({ text = '' }) => (
       return <p key={i}>{lines.map((l, j) => <React.Fragment key={j}>{j > 0 && <br />}{inline(l)}</React.Fragment>)}</p>;
     })}
   </div>
-);  
+);

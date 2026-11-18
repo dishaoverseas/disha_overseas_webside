@@ -10,6 +10,8 @@ import RussiaVisa from './pages/RussiaVisa.jsx';
 import { Blog, BlogPost } from './pages/Blog.jsx';
 import { FaqPage, Contact, Legal } from './pages/Misc.jsx';
 import NotFound from './pages/NotFound.jsx';
+import Assistant from './components/Assistant.jsx';
+import { MotionManager } from './components/Motion.jsx';
 
 const FONTS = {
   classic: { head: "'Playfair Display', Georgia, serif", body: "'Inter', system-ui, sans-serif",
@@ -72,6 +74,7 @@ export default function App() {
     <ContentProvider>
       <Theme />
       <Analytics />
+      <MotionManager />
       <a href="#main" className="skip">Skip to content</a>
       <Header />
       <main id="main">
@@ -94,6 +97,7 @@ export default function App() {
       </main>
       <Footer />
       <WhatsAppFloat />
+      <Assistant />
     </ContentProvider>
   );
 }

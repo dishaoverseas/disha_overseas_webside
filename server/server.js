@@ -9,6 +9,7 @@ import zlib from 'node:zlib';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { createBackup } from './backup.js';
+import { DEFAULTS, deepFill } from './defaults.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
@@ -56,6 +57,7 @@ async function init() {
   // New sections added by code updates appear automatically, your edits are never overwritten
   let added = false;
   for (const [k, v] of Object.entries(seed)) if (!(k in loaded)) { loaded[k] = v; added = true; }
+  if (deepFill(loaded, DEFAULTS)) added = true;   // newer website features get their default content
   if (added) fs.writeFileSync(CONTENT_FILE, JSON.stringify(loaded, null, 2) + '\n');
   content = loaded;
   ready = true;

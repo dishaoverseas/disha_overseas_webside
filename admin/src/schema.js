@@ -74,7 +74,7 @@ export const SECTIONS = [
           t('badge', 'Small badge text'), ta('title', 'Main heading', { rows: 2 }), ta('subtitle', 'Sub heading'),
           link('primaryBtn', 'Main button'), link('secondaryBtn', 'Second button'),
           img('image', 'Banner background photo (optional)'),
-          strings('points', 'Tick points under the buttons'),
+          strings('points', 'Tick points (shown as floating chips next to the globe, and under the buttons on phones)'),
           t('finderTitle', 'Country finder box: title'), t('finderText', 'Country finder box: text'),
         ]),
         list('stats', 'Highlight boxes', [t('value', 'Big text'), t('label', 'Small text')], { itemTitle: 'value' }),
@@ -187,11 +187,68 @@ export const SECTIONS = [
   },
   {
     key: 'testimonials', label: 'Testimonials', group: 'Content', icon: 'Star',
-    help: 'Add real client reviews. The section appears on the home page only when there is at least one.',
+    help: 'Add REAL client reviews only (ask clients to review you on Google, then paste it here with their permission). They glide across the home page. The section stays hidden until you add one.',
     field: {
       type: 'list', itemTitle: 'name', fields: [
         t('name', 'Client name'), t('location', 'City'), t('visa', 'Visa type'),
-        { key: 'rating', label: 'Stars (1 to 5)', type: 'number' }, ta('text', 'Review', { rows: 4 }),
+        { key: 'rating', label: 'Stars (1 to 5)', type: 'number' }, ta('text', 'Review (real client words only)', { rows: 4 }),
+        { key: 'source', label: 'Where was this review given?', type: 'select', options: [['Google', 'Google review'], ['Facebook', 'Facebook review'], ['WhatsApp', 'WhatsApp feedback'], ['Direct', 'Told us directly']] },
+        t('link', 'Link to the original review (optional)', { placeholder: 'https://g.page/...' }),
+        img('photo', 'Client photo (optional, only with their permission)'),
+      ],
+    },
+  },
+  {
+    key: 'assistant', label: 'Assistant (chat helper)', group: 'Content', icon: 'MessageCircle',
+    help: 'The helper at the bottom right of every page. A visitor clicks a suggestion (or types a word) and goes straight to that page or section of the website.',
+    field: {
+      type: 'object', fields: [
+        { key: 'enabled', label: 'Show the assistant', type: 'select', options: [['yes', 'Yes, show it'], ['no', 'No, hide it']] },
+        t('name', 'Assistant name'),
+        t('role', 'Small text under the name'),
+        img('avatar', 'Photo (optional; if empty the first letter of the name is shown)'),
+        ta('greeting', 'First message the assistant shows', { rows: 2 }),
+        t('placeholder', 'Hint inside the search box'),
+        t('fallback', 'Text of the WhatsApp button when nothing matches what the visitor typed'),
+        list('items', 'Suggestions (keywords the visitor can click)', [
+          t('label', 'Text the visitor sees'),
+          t('keywords', 'Hidden search words (separated by spaces)', { help: 'Used when the visitor types in the search box. Example for Russia: russia moscow russian' }),
+          t('target', 'Where it goes', { placeholder: '/russia-visa   or   /#services   or   whatsapp', help: 'A page like /russia-visa or /contact. A section of the home page like /#countries. Sections: #find  #services  #russia  #countries  #why-us  #process  #reviews  #faq. A full link like https://... opens in a new tab. The word whatsapp opens WhatsApp.' }),
+        ], { itemTitle: 'label' }),
+      ],
+    },
+  },
+  {
+    key: 'showcase', label: 'Country showcase (photo + text)', group: 'Content', icon: 'Globe',
+    help: 'The country by country blocks on the home page, each with a photo, a short description and a button. Add, remove or reorder countries here.',
+    field: {
+      type: 'object', fields: [
+        t('title', 'Section heading'),
+        ta('subtitle', 'Text under the heading', { rows: 2 }),
+        t('moreLabel', 'Button under the list (leave empty to hide it)'),
+        list('items', 'Countries', [
+          t('title', 'Country name / heading'),
+          t('flag', 'Flag code, 2 letters', { placeholder: 'ae, th, sg, gb...', help: 'Used for the small flag and when no photo is added. Codes: flagcdn.com/en/codes.html' }),
+          img('image', 'Photo (if empty, the flag is shown on a blue panel)'),
+          ta('text', 'Short description', { rows: 3 }),
+          strings('points', 'Tick points'),
+          t('buttonLabel', 'Button text'),
+          t('buttonLink', 'Button link', { placeholder: '/destinations/thailand' }),
+        ], { itemTitle: 'title' }),
+      ],
+    },
+  },
+  {
+    key: 'reviewsBar', label: 'Reviews strip (rating bar)', group: 'Content', icon: 'Star',
+    help: 'Small texts around the moving reviews. Fill the rating ONLY if it is the real rating on your Google profile, otherwise leave the score and count empty and no rating bar is shown.',
+    field: {
+      type: 'object', fields: [
+        { key: 'show', label: 'Show the rating bar', type: 'select', options: [['yes', 'Yes (only if score and count are filled)'], ['no', 'No']] },
+        t('eyebrow', 'Small label above the heading', { placeholder: 'Client reviews' }),
+        t('score', 'Rating, for example 4.8'),
+        t('count', 'Number of reviews, for example 45'),
+        t('source', 'Where the rating is from', { placeholder: 'Google' }),
+        t('link', 'Link to your Google reviews page (optional)'),
       ],
     },
   },
