@@ -142,7 +142,8 @@ function recipient() {
 }
 async function sendEmail(d, rows) {
   const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = process.env;
-  const nodemailer = (await import('nodemailer')).default;
+  const mod = await import('nodemailer');
+  const nodemailer = mod.default ?? mod;   // works with older and newer nodemailer versions
   const port = Number(SMTP_PORT || 465);
   const transporter = nodemailer.createTransport({ host: SMTP_HOST, port, secure: port === 465, auth: { user: SMTP_USER, pass: SMTP_PASS }, connectionTimeout: 10000, greetingTimeout: 10000 });
   const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email);
