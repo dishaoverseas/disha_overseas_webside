@@ -684,3 +684,7 @@ section[id] { scroll-margin-top: 112px; }
   .rv-wrap, .ticker-mask { overflow-x: auto; }
   .sc-body .ticks li { opacity: 1; transform: none; }
 }
+
+/* ===== Lady assistant avatar (add to the END of src/styles.css) ===== */
+.as-avatar img, .as-avatar svg { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
+.as-avatar.face { background: #dbe8ff; }

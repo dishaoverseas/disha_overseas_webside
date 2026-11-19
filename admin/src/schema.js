@@ -206,7 +206,7 @@ export const SECTIONS = [
         { key: 'enabled', label: 'Show the assistant', type: 'select', options: [['yes', 'Yes, show it'], ['no', 'No, hide it']] },
         t('name', 'Assistant name'),
         t('role', 'Small text under the name'),
-        img('avatar', 'Photo (optional; if empty the first letter of the name is shown)'),
+        img('avatar', 'Photo (optional; if empty, a friendly lady assistant illustration is shown)'),
         ta('greeting', 'First message the assistant shows', { rows: 2 }),
         t('placeholder', 'Hint inside the search box'),
         t('fallback', 'Text of the WhatsApp button when nothing matches what the visitor typed'),
