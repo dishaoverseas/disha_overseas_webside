@@ -10,6 +10,7 @@ import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { createBackup } from './backup.js';
 import { DEFAULTS, deepFill } from './defaults.js';
+import { routeInfo, orgSchema, llmsTxt } from './seo.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
@@ -353,15 +354,15 @@ function serveFile(req, res, file, cache) {
   fs.createReadStream(file).pipe(res);
 }
 
-function sendText(req, res, type, body, extra = {}) {
+function sendText(req, res, type, body, extra = {}, status = 200) {
   const buf = Buffer.from(body);
   const headers = { 'content-type': type, vary: 'Accept-Encoding', ...extra };
   if (buf.length > 1024 && acceptsGzip(req)) {
     const z = zlib.gzipSync(buf);
-    res.writeHead(200, { ...headers, 'content-encoding': 'gzip', 'content-length': z.length });
+    res.writeHead(status, { ...headers, 'content-encoding': 'gzip', 'content-length': z.length });
     return res.end(z);
   }
-  res.writeHead(200, { ...headers, 'content-length': buf.length });
+  res.writeHead(status, { ...headers, 'content-length': buf.length });
   res.end(buf);
 }
 
@@ -372,32 +373,31 @@ function renderIndex(req, pagePath = '/') {
   const base = baseUrl(req);
   const abs = (u) => (!u ? '' : /^https?:/.test(u) ? u : base + (u.startsWith('/') ? u : '/' + u));
   const safeJson = (o) => JSON.stringify(o).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
-  const title = s.seo?.title || s.siteName || 'Disha Overseas';
-  const desc = s.seo?.description || '';
+  const info = routeInfo(pagePath, content, base);
+  const title = info.title;
+  const desc = info.description || s.seo?.description || '';
   const cleanPath = pagePath === '/' ? '/' : pagePath.replace(/\/+$/, '');
   const url = base + (cleanPath === '/' ? '' : cleanPath);
   const image = abs(s.seo?.image || s.logo);
 
-  const sameAs = Object.values(s.social || {}).filter((u) => /^https?:/.test(u));
-  const org = {
-    '@context': 'https://schema.org', '@type': 'Organization', name: s.siteName, url: base,
-    logo: abs(s.logo), ...(s.phone ? { telephone: s.phone } : {}), ...(s.email ? { email: s.email } : {}),
-    ...(s.address ? { address: { '@type': 'PostalAddress', streetAddress: s.address, addressCountry: 'IN' } } : {}),
-    ...(sameAs.length ? { sameAs: [...new Set(sameAs)] } : {}),
-  };
   const tags = [];
   if (/^[A-Za-z0-9_-]{20,80}$/.test(String(s.googleVerification || '').trim())) tags.push(`<meta name="google-site-verification" content="${esc(String(s.googleVerification).trim())}" />`);
-  tags.push(`<link rel="canonical" href="${esc(url)}" />`);
+  if (info.known) tags.push(`<link rel="canonical" href="${esc(url)}" />`);
+  else tags.push('<meta name="robots" content="noindex" />');
   tags.push(`<meta property="og:type" content="website" />`, `<meta property="og:site_name" content="${esc(s.siteName || '')}" />`,
     `<meta property="og:title" content="${esc(title)}" />`, `<meta property="og:description" content="${esc(desc)}" />`, `<meta property="og:url" content="${esc(url)}" />`);
   if (image) tags.push(`<meta property="og:image" content="${esc(image)}" />`, `<meta name="twitter:card" content="summary" />`);
-  tags.push(`<script type="application/ld+json">${safeJson(org)}</script>`);
+  for (const sc of [orgSchema(content, base), ...info.schemas]) tags.push(`<script type="application/ld+json">${safeJson(sc)}</script>`);
+  const ga = String(s.gaId || '').trim();
+  if (/^G-[A-Z0-9]{6,14}$/.test(ga)) tags.push(`<script async src="https://www.googletagmanager.com/gtag/js?id=${ga}"></script>`, `<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${ga}');</script>`);
+  tags.push('<style>.seo-fallback{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}</style>');
   tags.push(`<script>window.__CONTENT__=${safeJson(content)}</script>`);
   html = html.replace('</head>', () => `${tags.join('\n')}\n</head>`);
-  if (s.seo?.title) html = html.replace(/<title>[\s\S]*?<\/title>/, () => `<title>${esc(s.seo.title)}</title>`);
-  if (s.seo?.description) html = html.replace(/<meta name="description" content="[^"]*"/, () => `<meta name="description" content="${esc(s.seo.description)}"`);
+  html = html.replace('<div id="root"></div>', () => `<div id="root"><div class="seo-fallback">${info.body}</div></div>`);
+  html = html.replace(/<title>[\s\S]*?<\/title>/, () => `<title>${esc(title)}</title>`);
+  if (desc) html = html.replace(/<meta name="description" content="[^"]*"/, () => `<meta name="description" content="${esc(desc)}"`);
   if (s.favicon) html = html.replace('href="/favicon.png"', () => `href="${esc(s.favicon)}"`);
-  return html;
+  return { html, status: info.known ? 200 : 404 };
 }
 
 function website(req, res, url) {
@@ -405,6 +405,7 @@ function website(req, res, url) {
   try { p = decodeURIComponent(url.pathname); } catch { res.writeHead(400); return res.end('Bad request'); }
 
   if (p === '/sitemap.xml') return sendText(req, res, 'application/xml', sitemap(req), { 'cache-control': 'no-cache' });
+  if (p === '/llms.txt') return sendText(req, res, 'text/plain; charset=utf-8', llmsTxt(content, baseUrl(req)), { 'cache-control': 'no-cache' });
   if (p === '/robots.txt') return sendText(req, res, 'text/plain', `User-agent: *\nAllow: /\nDisallow: /admin\nSitemap: ${baseUrl(req)}/sitemap.xml\n`);
 
   if (p.startsWith('/uploads/')) {
@@ -432,7 +433,8 @@ function website(req, res, url) {
     if (isFile(a)) return sendText(req, res, MIME['.html'], fs.readFileSync(a, 'utf8'), { 'cache-control': 'no-store', 'x-robots-tag': 'noindex' });
   }
 
-  return sendText(req, res, MIME['.html'], renderIndex(req, p), { 'cache-control': 'no-cache' });
+  const page = renderIndex(req, p);
+  return sendText(req, res, MIME['.html'], page.html, { 'cache-control': 'no-cache' }, page.status);
 }
 
 // ---------- server ----------
